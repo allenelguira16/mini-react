@@ -1,4 +1,4 @@
 import { App } from "./App";
-import { createApp } from "./Nebula/compiler";
+import { createApp } from "../mini-react";
 
 createApp(document.querySelector<HTMLElement>("#app")!, <App />);
