@@ -37,9 +37,31 @@ export const eventMapper = (() => {
     }
   }
 
+  function copyEventListenersDeep(to: Element, from: Element) {
+    copyEventListeners(to, from); // Copy top-level listeners
+
+    const fromChildren = Array.from(from.children);
+    const toChildren = Array.from(to.children);
+
+    for (let i = 0; i < fromChildren.length; i++) {
+      const fromChild = fromChildren[i];
+      const toChild = toChildren[i];
+
+      if (fromChild && toChild) {
+        copyEventListenersDeep(toChild, fromChild);
+      }
+    }
+  }
+
   function getEventListener(targetElement: Element) {
     return eventMap.get(targetElement) || [];
   }
 
-  return { addEventListener, removeEventListeners, copyEventListeners };
+  return {
+    addEventListener,
+    removeEventListeners,
+    copyEventListeners,
+    copyEventListenersDeep,
+    getEventListener,
+  };
 })();

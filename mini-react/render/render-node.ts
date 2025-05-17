@@ -14,9 +14,16 @@ export async function renderNode(vNode: JSX.Element) {
 
   for (const [key, value] of Object.entries(props)) {
     if (key.startsWith("on")) {
-      eventMapper.addEventListener($dom, key.slice(2).toLowerCase(), value);
-    } else {
-      $dom.setAttribute(key, value);
+      const type = key.slice(2).toLowerCase();
+      eventMapper.addEventListener($dom, type, value);
+    }
+
+    if (!key.startsWith("on")) {
+      if (key === "disabled") {
+        value && $dom.toggleAttribute(key);
+      } else {
+        $dom.setAttribute(key, value);
+      }
     }
   }
 

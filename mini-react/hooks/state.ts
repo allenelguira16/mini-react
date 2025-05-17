@@ -28,7 +28,7 @@ export const stateFactory = (() => {
 
       stateContextMap.set(component, context);
     },
-    state: <T>(initial: T): [T, (value: T) => void] => {
+    state: <T = undefined>(initial?: T): [T, (value: T) => void] => {
       const component = currentFunction;
       const context = getContext(component);
       const idx = context.index++;

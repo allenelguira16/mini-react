@@ -33,12 +33,12 @@ export async function renderComponent(_vNode: JSX.Element) {
 
   let $element = await render(component(props));
 
-  await postProcessHooks(store);
-
   renderObserver.watch(async () => {
     const $newElement = await renderComponent(vNode);
     patch($element, $newElement);
   }, component);
+
+  await postProcessHooks(store);
 
   return $element;
 }
