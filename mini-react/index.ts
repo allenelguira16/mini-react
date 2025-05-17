@@ -1,2 +1,2 @@
 export { createApp } from "./create-app";
-export { state, effect } from "./hooks";
+export { $state, $effect } from "./hooks";

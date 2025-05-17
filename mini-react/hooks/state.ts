@@ -1,31 +1,52 @@
 import { deepEqual, renderObserver } from "../utils";
 
-const stateFactory = (() => {
-  let stateIndex = 0;
-  let stateList: any[] = [];
+export type StateContext = {
+  index: number;
+  states: any[];
+  shouldUpdate: boolean;
+};
+
+export const stateFactory = (() => {
+  let currentFunction: Function;
+  const stateContextMap = new WeakMap<Function, StateContext>();
+
+  const getContext = (component: Function | undefined) => {
+    if (!component) throw new Error("State must be called inside a component");
+
+    const context = stateContextMap.get(component);
+
+    if (!context) throw new Error("State must be called inside a component");
+
+    return context;
+  };
 
   return {
-    resetState: () => {
-      stateIndex = 0;
+    registerComponent: (component: Function, context: StateContext) => {
+      currentFunction = component;
+
+      if (stateContextMap.has(component)) return;
+
+      stateContextMap.set(component, context);
     },
     state: <T>(initial: T): [T, (value: T) => void] => {
-      const idx = stateIndex++;
+      const component = currentFunction;
+      const context = getContext(component);
+      const idx = context.index++;
 
-      if (!stateList[idx]) {
-        stateList[idx] = initial;
+      if (!context.states[idx]) {
+        context.states[idx] = initial;
       }
 
       const setState = (newVal: T) => {
-        if (deepEqual(stateList[idx], newVal)) return;
+        if (deepEqual(context.states[idx], newVal)) return;
 
-        stateList[idx] = newVal;
-        renderObserver.update();
+        context.states[idx] = newVal;
+        context.shouldUpdate = true;
+
+        renderObserver.update(component);
       };
 
-      return [stateList[idx], setState] as const;
+      return [context.states[idx], setState] as const;
     },
   };
 })();
-
-export const state = stateFactory.state;
-export const resetState = stateFactory.resetState;

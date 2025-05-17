@@ -1,45 +1,61 @@
 import { deepEqual } from "../utils";
 
-type EffectCallback = () => void | (() => void);
+export type EffectContext = {
+  shouldRunOnce: boolean;
 
-const effectsFactory = (() => {
-  let currentIndex = 0;
-  let cleanups: Function[] = [];
-  let dependencies: any[] = [];
+  index: number;
+  cleanups: Function[];
+  dependencies: any[];
 
-  let effects: EffectCallback[] = [];
+  effectCallbacks: EffectCallback[];
+};
+
+type EffectCallback = () => void | Promise<void> | (() => void | Promise<void>);
+
+export const effectFactory = (() => {
+  let currentFunction: Function;
+  const effectContextMap = new WeakMap<Function, EffectContext>();
+
+  const getContext = (component: Function | undefined) => {
+    if (!component) throw new Error("State must be called inside a component");
+
+    const context = effectContextMap.get(component);
+
+    if (!context) throw new Error("State must be called inside a component");
+
+    return context;
+  };
 
   return {
-    runEffects: () => {
-      effects.forEach((effect) => effect());
-    },
-    resetEffects: () => {
-      effects = [];
-      currentIndex = 0;
+    registerComponent: (component: Function, context: EffectContext) => {
+      currentFunction = component;
+
+      if (effectContextMap.has(component)) return;
+
+      effectContextMap.set(component, context);
     },
     effect: (callback: EffectCallback, newDependencies?: any[]) => {
-      const idx = currentIndex++;
+      const component = currentFunction;
+      const context = getContext(component);
+      const idx = context.index++;
 
       const hasChanged =
         !newDependencies ||
         newDependencies.some(
-          (dep, i) => !deepEqual(dep, dependencies[idx]?.[i])
+          (dep, i) => !deepEqual(dep, context.dependencies[idx]?.[i])
         );
 
-      if (!hasChanged) return;
+      if (!hasChanged && !context.shouldRunOnce) return;
 
-      effects.push(() => {
-        if (typeof cleanups[idx] === "function") cleanups[idx]();
+      context.effectCallbacks.push(async () => {
+        if (typeof context.cleanups[idx] === "function")
+          context.cleanups[idx]();
 
-        const cleanup = callback();
-        if (typeof cleanup === "function") cleanups[idx] = cleanup;
+        const cleanup = await callback();
+        if (typeof cleanup === "function") context.cleanups[idx] = cleanup;
 
-        dependencies[idx] = newDependencies;
+        context.dependencies[idx] = newDependencies;
       });
     },
   };
 })();
-
-export const effect = effectsFactory.effect;
-export const runEffects = effectsFactory.runEffects;
-export const resetEffects = effectsFactory.resetEffects;

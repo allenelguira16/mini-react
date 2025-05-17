@@ -1,6 +1,13 @@
 import { eventMapper } from "../utils";
 
-export function patch($oldNode: HTMLElement, $newNode: HTMLElement): void {
+export function patch(
+  $oldNode: HTMLElement | Text,
+  $newNode: HTMLElement | Text
+) {
+  if (!($oldNode instanceof HTMLElement && $newNode instanceof HTMLElement)) {
+    return;
+  }
+
   // If they are not the same tag, replace entirely
   if ($oldNode.tagName !== $newNode.tagName) {
     $oldNode.replaceWith($newNode);
