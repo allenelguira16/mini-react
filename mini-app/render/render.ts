@@ -11,6 +11,9 @@ export function h(
   children: (string | number | HTMLElement)[]
 ) {
   if (typeof type === "function") {
+    for (const [key, value] of Object.entries(props)) {
+      props[key] = value();
+    }
     return type({ ...props, children });
   }
 

@@ -1,10 +1,11 @@
 import { state } from "../mini-app";
+import { name } from "./globalState";
 
 export const DropdownList = () => {
   const [numbers, setNumbers] = state([1, 2, 3]);
 
   const addDropdown = () => {
-    setNumbers([...numbers(), numbers()[numbers.length - 1] + 1]);
+    setNumbers([...numbers(), numbers()[numbers().length - 1] + 1]);
   };
 
   return (
@@ -31,7 +32,10 @@ const Dropdown = ({ number }: { number: number }) => {
 
   return (
     <div style={{ position: "relative" }}>
-      <button onClick={handleToggle}>Open Dropdown {number}</button>
+      <div>
+        <button onClick={handleToggle}>Open Dropdown {number}</button>
+        <div>Hi {name()}</div>
+      </div>
       {isOpen() && (
         <div style={{ position: "absolute" }}>
           <ul>

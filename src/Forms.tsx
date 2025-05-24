@@ -1,8 +1,10 @@
 import { effect, state } from "../mini-app";
+import { name, setName } from "./globalState";
 
-export const Test = () => {
+export const Forms = () => {
   return (
     <div>
+      <div>Hi {name()}</div>
       <div>
         <input type="text" />
       </div>
@@ -10,7 +12,6 @@ export const Test = () => {
         <Counter />
         <Input />
       </div>
-      <>Hi Allen</>
     </div>
   );
 };
@@ -28,7 +29,7 @@ function Counter() {
 
   return (
     <div>
-      <div>Hi {count()}</div>
+      <div>Count: {count()}</div>
       <button disabled={count() > 5} onClick={handleCount}>
         Add counter
       </button>
@@ -38,11 +39,11 @@ function Counter() {
 }
 
 function Input() {
-  const [name, setName] = state("a");
+  // const [name, setName] = state("a");
 
   return (
     <div>
-      <div>Hi {name()}</div>
+      <div>Name {name()}</div>
       <input
         type="text"
         onInput={(event: KeyboardEvent) => {

@@ -1,4 +1,5 @@
 import { effect, state, Fragment } from "../mini-app";
+import { name } from "./globalState";
 
 type PokeDexData = {
   count: number;
@@ -28,6 +29,7 @@ export const PokeDex = () => {
 
   return (
     <div>
+      <div>Hi {name()}</div>
       {!pokeDexData() && <div>loading</div>}
       {pokeDexData() && (
         <>

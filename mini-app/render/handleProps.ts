@@ -22,6 +22,16 @@ export function handleProps($element: HTMLElement, props: Record<string, any>) {
   }
 }
 
+function isEmpty(obj: Record<string, any>) {
+  for (const prop in obj) {
+    if (Object.hasOwn(obj, prop)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 function applyStyle($element: HTMLElement, style: Record<string, any>) {
   for (const [key, value] of Object.entries(style)) {
     if (typeof value === "number" && !isUnitLessCSSProperty(key)) {
