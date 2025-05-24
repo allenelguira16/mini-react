@@ -2,13 +2,13 @@ import { handleChildren } from "./handleChildren";
 import { handleProps } from "./handleProps";
 
 export function createRoot($root: HTMLElement, app: JSX.Element) {
-  $root.appendChild(app);
+  if (app instanceof HTMLElement) $root.appendChild(app);
 }
 
 export function h(
   type: string | Function,
   props: Record<string, any>,
-  children: (string | number | HTMLElement)[]
+  children: JSX.Element[]
 ) {
   if (typeof type === "function") {
     for (const [key, value] of Object.entries(props)) {

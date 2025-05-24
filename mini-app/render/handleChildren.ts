@@ -1,14 +1,6 @@
 import { effect } from "../reactivity";
 
-export function handleChildren(
-  children: (
-    | string
-    | number
-    | HTMLElement
-    | Function
-    | (string | number | HTMLElement)[]
-  )[]
-) {
+export function handleChildren(children: JSX.Element[]) {
   const $fragment = document.createDocumentFragment();
 
   for (const child of children) {
@@ -18,15 +10,7 @@ export function handleChildren(
   return $fragment;
 }
 
-function appendChild(
-  parent: Node,
-  child:
-    | string
-    | number
-    | HTMLElement
-    | Function
-    | (string | number | HTMLElement)[]
-) {
+function appendChild(parent: Node, child: JSX.Element) {
   if (typeof child === "function") {
     const anchor = document.createTextNode("");
     parent.appendChild(anchor);

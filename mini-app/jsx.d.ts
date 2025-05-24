@@ -1,11 +1,18 @@
+// TODO: add specific types not just any
 declare namespace JSX {
-  type Element = HTMLElement | DocumentFragment;
+  type Element =
+    | string
+    | number
+    | Function
+    | HTMLElement
+    | DocumentFragment
+    | (string | number | HTMLElement)[];
 
   interface IntrinsicElements {
-    [elemName: string]: any; // allow any HTML tag
+    [elemName: string]: any;
   }
 
   interface ElementChildrenAttribute {
-    children: {}; // supports children prop
+    children: {};
   }
 }

@@ -11,7 +11,7 @@ export function state<T>(initialValue?: T) {
 
   const set = (newValue: T | ((prev: T) => T)) => {
     value =
-      typeof newValue === "function" ? (newValue as any)(value) : newValue;
+      typeof newValue === "function" ? (newValue as Function)(value) : newValue;
     for (const sub of subscribers) sub();
   };
 

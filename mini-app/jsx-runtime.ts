@@ -1,7 +1,6 @@
 import { h, Fragment } from "./render";
 
-// export { h as jsx, h as jsxs, Fragment } from "./main";
-
+// Transform jsx to use h
 export const jsx = (type: any, { children = [], ...props }: any) =>
   h(type, props, Array.isArray(children) ? children : [children]);
 

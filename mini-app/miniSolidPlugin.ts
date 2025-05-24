@@ -3,7 +3,7 @@ import babel from "vite-plugin-babel";
 import { declare } from "@babel/helper-plugin-utils";
 import * as t from "@babel/types";
 
-export const miniSolidBabelPlugin = declare((api) => {
+export const miniAppBabelPlugin = declare((api) => {
   api.assertVersion(7);
 
   return {
@@ -43,7 +43,8 @@ export const miniSolidBabelPlugin = declare((api) => {
   };
 });
 
-const miniSolidPlugin = ({ importSource }: { importSource: string }) =>
+// Vite Plugin
+const miniAppPlugin = ({ importSource }: { importSource: string }) =>
   babel({
     babelConfig: {
       presets: [
@@ -56,9 +57,9 @@ const miniSolidPlugin = ({ importSource }: { importSource: string }) =>
         ],
         "@babel/preset-typescript",
       ],
-      plugins: [miniSolidBabelPlugin],
+      plugins: [miniAppBabelPlugin],
     },
     filter: /\.(t|j)sx?$/, // make sure Babel runs on TSX files too
   });
 
-export default miniSolidPlugin;
+export default miniAppPlugin;

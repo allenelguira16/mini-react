@@ -1,10 +1,10 @@
 import { defineConfig } from "vite";
 import path from "path";
-import miniSolidBabelPlugin from "./mini-app/miniSolidPlugin";
+import miniApp from "./mini-app/miniSolidPlugin";
 
 export default defineConfig({
   plugins: [
-    miniSolidBabelPlugin({
+    miniApp({
       importSource: path.resolve(__dirname, "./mini-app"),
     }),
   ],
