@@ -39,8 +39,6 @@ function Counter() {
 }
 
 function Input() {
-  // const [name, setName] = state("a");
-
   return (
     <div>
       <div>Name {name()}</div>
