@@ -1,4 +1,4 @@
-import { effect, state, Fragment } from "../mini-app";
+import { effect, state } from "../mini-app";
 import { name } from "./globalState";
 
 type PokeDexData = {
@@ -12,7 +12,7 @@ type PokeDexData = {
 };
 
 export const PokeDex = () => {
-  const [pokeDexData, setPokeDexData] = state<PokeDexData | undefined>();
+  const [pokeDexData, setPokeDexData] = state<PokeDexData>();
 
   const fetchPokeDexData = (url: string | null) => async () => {
     if (!url) return;

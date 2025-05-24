@@ -1,7 +1,11 @@
 import { currentEffect } from "./effect";
 
+type StateReturn<T> = readonly [() => T, (value: T | ((prev: T) => T)) => T];
+
+export function state<T>(initialValue: T): StateReturn<T>;
+export function state<T = undefined>(): StateReturn<T | undefined>;
 export function state<T>(initialValue?: T) {
-  let value = initialValue;
+  let value = initialValue as T;
   const subscribers = new Set<() => void>();
 
   const get = () => {
@@ -9,11 +13,10 @@ export function state<T>(initialValue?: T) {
     return value;
   };
 
-  const set = (newValue: T | ((prev: T) => T)) => {
-    value =
-      typeof newValue === "function" ? (newValue as Function)(value) : newValue;
+  const set = (newValue: StateReturn<T>["1"]) => {
+    value = typeof newValue === "function" ? newValue(value) : newValue;
     for (const sub of subscribers) sub();
   };
 
-  return [get as () => T, set] as const;
+  return [get, set] as const;
 }
