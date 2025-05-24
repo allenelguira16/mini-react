@@ -1,4 +1,4 @@
-import { useEffect, useState } from "../mini-app";
+import { effect, state } from "../mini-app";
 
 export const Test = () => {
   return (
@@ -16,9 +16,9 @@ export const Test = () => {
 };
 
 function Counter() {
-  const [count, setCount] = useState(1);
+  const [count, setCount] = state(1);
 
-  useEffect(() => {
+  effect(() => {
     console.log(count());
   });
 
@@ -38,7 +38,7 @@ function Counter() {
 }
 
 function Input() {
-  const [name, setName] = useState("a");
+  const [name, setName] = state("a");
 
   return (
     <div>

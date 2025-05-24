@@ -1,4 +1,4 @@
-import { useEffect } from "../reactivity";
+import { effect } from "../reactivity";
 
 export function handleChildren(
   children: (
@@ -32,7 +32,7 @@ function appendChild(
     parent.appendChild(anchor);
     let currentNodes: Node[] = [];
 
-    useEffect(() => {
+    effect(() => {
       const result = child();
       const normalized = Array.isArray(result) ? result : [result];
       const newNodes: Node[] = [];

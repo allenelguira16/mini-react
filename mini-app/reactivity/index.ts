@@ -1,2 +1,2 @@
-export { useState } from "./state";
-export { useEffect } from "./effect";
+export { state } from "./state";
+export { effect } from "./effect";

@@ -1,9 +1,9 @@
-import { useEffect } from "../reactivity";
+import { effect } from "../reactivity";
 import { UNIT_LESS_PROPS } from "../const";
 
 export function handleProps($element: HTMLElement, props: Record<string, any>) {
   for (const key in props) {
-    useEffect(() => {
+    effect(() => {
       const value = props[key];
       if (key === "ref" && typeof value === "function") {
         value($element);

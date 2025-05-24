@@ -1,4 +1,4 @@
-import { useEffect, useState, Fragment } from "../mini-app";
+import { effect, state, Fragment } from "../mini-app";
 
 type PokeDexData = {
   count: number;
@@ -11,7 +11,7 @@ type PokeDexData = {
 };
 
 export const PokeDex = () => {
-  const [pokeDexData, setPokeDexData] = useState<PokeDexData | undefined>();
+  const [pokeDexData, setPokeDexData] = state<PokeDexData | undefined>();
 
   const fetchPokeDexData = (url: string | null) => async () => {
     if (!url) return;
@@ -22,7 +22,7 @@ export const PokeDex = () => {
     setPokeDexData(json);
   };
 
-  useEffect(async () => {
+  effect(async () => {
     await fetchPokeDexData("https://pokeapi.co/api/v2/pokemon")();
   });
 

@@ -1,7 +1,7 @@
-import { useState } from "../mini-app";
+import { state } from "../mini-app";
 
 export const DropdownList = () => {
-  const [numbers, setNumbers] = useState([1, 2, 3]);
+  const [numbers, setNumbers] = state([1, 2, 3]);
 
   const addDropdown = () => {
     setNumbers([...numbers(), numbers()[numbers.length - 1] + 1]);
@@ -23,7 +23,7 @@ export const DropdownList = () => {
 };
 
 const Dropdown = ({ number }: { number: number }) => {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = state(false);
 
   const handleToggle = () => {
     setIsOpen(!isOpen());

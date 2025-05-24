@@ -1,6 +1,6 @@
 import { currentEffect } from "./effect";
 
-export function useState<T>(initialValue?: T) {
+export function state<T>(initialValue?: T) {
   let value = initialValue;
   const subscribers = new Set<() => void>();
 
