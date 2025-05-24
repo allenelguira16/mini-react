@@ -5,7 +5,17 @@ export const DropdownList = () => {
   const [numbers, setNumbers] = state([1, 2, 3]);
 
   const addDropdown = () => {
-    setNumbers([...numbers(), numbers()[numbers().length - 1] + 1]);
+    if (!numbers().length) {
+      setNumbers([1]);
+    } else {
+      setNumbers([...numbers(), numbers()[numbers().length - 1] + 1]);
+    }
+  };
+
+  const removeDropdown = () => {
+    if (numbers().length > 0) {
+      setNumbers(numbers().slice(0, -1));
+    }
   };
 
   return (
@@ -13,6 +23,7 @@ export const DropdownList = () => {
       <div>
         <span>Add Dropdown</span>
         <button onClick={addDropdown}>Add</button>
+        <button onClick={removeDropdown}>Remove</button>
       </div>
       <div style={{ display: "flex" }}>
         {numbers().map((number) => (

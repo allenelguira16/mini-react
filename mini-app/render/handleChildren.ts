@@ -19,29 +19,53 @@ function appendChild(parent: Node, child: JSX.Element) {
     effect(() => {
       const result = child();
       const normalized = Array.isArray(result) ? result : [result];
-      const newNodes: Node[] = [];
-
-      for (const item of normalized) {
-        if (item instanceof Node) {
-          newNodes.push(item);
-        } else if (typeof item === "string" || typeof item === "number") {
-          newNodes.push(document.createTextNode(String(item)));
-        }
-      }
 
       const parentNode = anchor.parentNode;
       if (!parentNode) return;
 
-      // Remove old nodes
-      for (const node of currentNodes) {
-        if (node.parentNode === parentNode) {
-          parentNode.removeChild(node);
+      const newNodes: Node[] = normalized
+        .map((item) => {
+          if (item instanceof Node) return item;
+          if (typeof item === "string" || typeof item === "number") {
+            return document.createTextNode(String(item));
+          }
+        })
+        .filter((n) => !!n);
+
+      // --- Diff algorithm ---
+      let i = 0;
+      for (; i < newNodes.length && i < currentNodes.length; i++) {
+        const newNode = newNodes[i];
+        const oldNode = currentNodes[i];
+
+        if (
+          newNode.nodeType === Node.TEXT_NODE &&
+          oldNode.nodeType === Node.TEXT_NODE
+        ) {
+          if ((newNode as Text).data !== (oldNode as Text).data) {
+            (oldNode as Text).data = (newNode as Text).data;
+          }
+          newNodes[i] = oldNode; // reuse old node
+        } else if (newNode.isEqualNode(oldNode)) {
+          newNodes[i] = oldNode; // reuse identical node
+        } else {
+          parentNode.replaceChild(newNode, oldNode);
         }
       }
 
-      // Insert new nodes before the anchor
-      for (const node of newNodes) {
-        parentNode.insertBefore(node, anchor);
+      // Remove extra old nodes
+      while (i < currentNodes.length) {
+        const oldNode = currentNodes[i];
+        if (oldNode.parentNode === parentNode) {
+          parentNode.removeChild(oldNode);
+        }
+        i++;
+      }
+
+      // Add new extra nodes
+      while (i < newNodes.length) {
+        parentNode.insertBefore(newNodes[i], anchor);
+        i++;
       }
 
       currentNodes = newNodes;
