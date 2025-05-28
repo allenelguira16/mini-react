@@ -4,9 +4,9 @@ declare namespace JSX {
     | string
     | number
     | Function
-    | HTMLElement
+    | Node
     | DocumentFragment
-    | (string | number | HTMLElement)[];
+    | Element[];
 
   interface IntrinsicElements {
     [elemName: string]: any;

@@ -1,12 +1,12 @@
-import { effect, state } from "../mini-app";
-import { name, setName } from "./globalState";
+import { effect, state, computed } from "../mini-app";
+import { name } from "./globalState";
 
 export const Forms = () => {
   return (
     <div>
-      <div>Hi {name()}</div>
+      <div>Hi {name.value}</div>
       <div>
-        <input type="text" />
+        <input type="text" value={name.value} />
       </div>
       <div>
         <Counter />
@@ -17,23 +17,25 @@ export const Forms = () => {
 };
 
 function Counter() {
-  const [count, setCount] = state(1);
+  const count = state(0);
+  const double = computed(() => count.value * 2);
 
   effect(() => {
-    console.log(count());
+    console.log(double.value);
   });
 
   const handleCount = () => {
-    setCount(count() + 1);
+    count.value++;
   };
 
   return (
     <div>
-      <div>Count: {count()}</div>
-      <button disabled={count() > 5} onClick={handleCount}>
+      <div>Count: {count.value}</div>
+      <div>Double Count: {double.value}</div>
+      <button disabled={count.value > 5} onClick={handleCount}>
         Add counter
       </button>
-      {count() >= 10 && <div>Hi</div>}
+      <div>{count.value <= 3 ? <div>Hi</div> : "string"}</div>
     </div>
   );
 }
@@ -41,14 +43,14 @@ function Counter() {
 function Input() {
   return (
     <div>
-      <div>Name {name()}</div>
+      <div>Name {name.value}</div>
       <input
         type="text"
         onInput={(event: KeyboardEvent) => {
           const input = event.currentTarget as HTMLInputElement;
-          setName(input.value);
+          name.value = input.value;
         }}
-        value={name()}
+        value={name.value}
       />
     </div>
   );

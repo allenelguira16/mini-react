@@ -2,9 +2,54 @@ import babel from "vite-plugin-babel";
 
 import { declare } from "@babel/helper-plugin-utils";
 import * as t from "@babel/types";
+import { NodePath } from "@babel/core";
 
 export const miniAppBabelPlugin = declare((api) => {
   api.assertVersion(7);
+
+  function isMapCall(callee: t.Node | null | undefined): boolean {
+    if (!callee) return false;
+    return (
+      (t.isMemberExpression(callee) || t.isOptionalMemberExpression(callee)) &&
+      t.isIdentifier(callee.property, { name: "map" })
+    );
+  }
+
+  function injectWarn(
+    path: NodePath<t.CallExpression | t.OptionalCallExpression>
+  ) {
+    const { line, column } = path.node.loc?.start ?? { line: "?", column: "?" };
+
+    // Create an arrow function expression:
+    // (() => {
+    //   console.warn("[mini-solid] ⚠️ Detected .map() inside JSX at line ..., column ....");
+    //   return ORIGINAL_MAP_CALL;
+    // })()
+
+    const originalCall = path.node;
+
+    const warnStatement = t.expressionStatement(
+      t.callExpression(
+        t.memberExpression(t.identifier("console"), t.identifier("warn")),
+        [
+          t.stringLiteral(
+            `[mini-solid] ⚠️ Detected .map() inside JSX at line ${line}, column ${column}. Consider using <For> for more efficient rendering.`
+          ),
+        ]
+      )
+    );
+
+    const iife = t.callExpression(
+      t.arrowFunctionExpression(
+        [],
+        t.blockStatement([warnStatement, t.returnStatement(originalCall)])
+      ),
+      []
+    );
+
+    path.replaceWith(iife);
+    path.skip();
+  }
 
   return {
     name: "mini-solid",
@@ -15,29 +60,24 @@ export const miniAppBabelPlugin = declare((api) => {
         // Skip empty expressions
         if (t.isJSXEmptyExpression(expr)) return;
 
-        // Skip if already a function
-        if (t.isFunctionExpression(expr) || t.isArrowFunctionExpression(expr))
-          return;
-
-        // JSX attribute case
-        if (path.parentPath.isJSXAttribute()) {
-          const attributeNameNode = path.parentPath.node.name;
-
-          // If attribute name is an identifier (e.g., onClick, value, etc.)
-          if (t.isJSXIdentifier(attributeNameNode)) {
-            const name = attributeNameNode.name;
-
-            // Skip if the attribute is an event handler (starts with "on")
-            if (name.startsWith("on")) return;
-          }
-
-          // For non-event attributes, wrap the expression
-          path.node.expression = t.arrowFunctionExpression([], expr);
-          return;
-        }
-
         // For JSX children, always wrap
         path.node.expression = t.arrowFunctionExpression([], expr);
+
+        // Traverse and inject .map() warnings with IIFE
+        path.traverse({
+          CallExpression(innerPath) {
+            if (isMapCall(innerPath.node.callee)) {
+              injectWarn(innerPath);
+              innerPath.skip();
+            }
+          },
+          OptionalCallExpression(innerPath) {
+            if (isMapCall(innerPath.node.callee)) {
+              injectWarn(innerPath);
+              innerPath.skip();
+            }
+          },
+        });
       },
     },
   };
@@ -58,6 +98,7 @@ const miniAppPlugin = ({ importSource }: { importSource: string }) =>
         "@babel/preset-typescript",
       ],
       plugins: [miniAppBabelPlugin],
+      sourceMaps: true, // generate external source map files
     },
     filter: /\.(t|j)sx?$/, // make sure Babel runs on TSX files too
   });
