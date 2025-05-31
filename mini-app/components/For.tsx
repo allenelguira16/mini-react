@@ -27,7 +27,7 @@ export function For<T>(props: ForProps<T>): JSX.Element {
     key = (item) => item,
   } = props as unknown as ForPropsReal<T>;
 
-  const placeholder = document.createTextNode("") as RefNode;
+  const placeholder = document.createComment(" FOR ANCHOR ") as RefNode;
   const nodes = new Map<any, Node[]>();
   const fallback = _fallback?.();
   let previousKeys: any[] = [];
@@ -38,6 +38,7 @@ export function For<T>(props: ForProps<T>): JSX.Element {
       if (!parent) return;
 
       const items = each() || [];
+      console.log(items);
       const nextKeys = items.map(key);
       const usedKeys = new Set();
 
@@ -95,6 +96,8 @@ export function For<T>(props: ForProps<T>): JSX.Element {
 
       previousKeys = nextKeys;
     });
+
+    return anchor.parentNode;
   };
 
   return placeholder;

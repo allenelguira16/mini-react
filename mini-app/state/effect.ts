@@ -1,4 +1,6 @@
-export type EffectFn = () => void;
+export type EffectFn = () =>
+  | Promise<void | (() => void)>
+  | (void | (() => void));
 
 export let activeEffect: EffectFn | null = null;
 
@@ -23,7 +25,7 @@ export function effectify(fn: EffectFn): EffectFn {
 
 const depMap: WeakMap<object, Map<PropertyKey, Set<EffectFn>>> = new WeakMap();
 
-export function track(target: object, key: PropertyKey): void {
+export function track(target: object): void {
   if (!activeEffect) return;
 
   let deps = depMap.get(target);
@@ -32,20 +34,20 @@ export function track(target: object, key: PropertyKey): void {
     depMap.set(target, deps);
   }
 
-  let dep = deps.get(key);
+  let dep = deps.get("value");
   if (!dep) {
     dep = new Set<EffectFn>();
-    deps.set(key, dep);
+    deps.set("value", dep);
   }
 
   dep.add(activeEffect);
 }
 
-export function trigger(target: object, key: PropertyKey): void {
+export function trigger(target: object): void {
   const deps = depMap.get(target);
   if (!deps) return;
 
-  const dep = deps.get(key);
+  const dep = deps.get("value");
   if (!dep) return;
 
   for (const effect of dep) {

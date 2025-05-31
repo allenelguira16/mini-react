@@ -7,11 +7,11 @@ export function state<T>(initialValue?: T): { value: T | undefined } {
 
   return new Proxy(state, {
     get(target, key, receiver) {
-      track(target, key);
+      track(target);
       return Reflect.get(target, key, receiver);
     },
     set(target, key, newValue, receiver) {
-      const oldValue = target[key as keyof typeof target];
+      const oldValue = target["value"];
       const result = Reflect.set(target, key, newValue, receiver);
 
       const isArray = Array.isArray(newValue);
@@ -26,7 +26,7 @@ export function state<T>(initialValue?: T): { value: T | undefined } {
         isArray || isObject || (isPrimitive && oldValue !== newValue);
 
       if (shouldTrigger) {
-        trigger(target, key);
+        trigger(target);
       }
 
       return result;

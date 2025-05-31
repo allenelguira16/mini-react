@@ -20,17 +20,16 @@ export function handleProps($element: HTMLElement, props: Record<string, any>) {
       });
     } else {
       effect(() => {
-        const value = props[key];
-        // console.log(value);
+        const value =
+          typeof props[key] === "function" ? props[key]() : props[key];
+
         if (key === "ref" && typeof value === "function") {
-          value($element);
+          queueMicrotask(() => value($element));
         } else if (key === "style") {
-          const styles = typeof value === "function" ? value() : value;
-          applyStyle($element, styles);
+          applyStyle($element, value);
         } else {
-          const attributeValue = typeof value === "function" ? value() : value;
-          if (key === "disabled") $element.toggleAttribute(key, attributeValue);
-          else $element.setAttribute(key, attributeValue);
+          if (key === "disabled") $element.toggleAttribute(key, value);
+          else $element.setAttribute(key, value);
         }
       });
     }

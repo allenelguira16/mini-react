@@ -1,47 +1,49 @@
 import { effect } from "../state";
 import { getNode, isNil, normalizeDom } from "../util";
 
-export function handleChildren(children: JSX.Element[]) {
-  const $fragment = document.createDocumentFragment();
-
+export function handleChildren($parent: HTMLElement, children: JSX.Element[]) {
   for (const child of children) {
-    appendChild($fragment, child);
+    appendChild($parent, child);
   }
-
-  return $fragment;
-}
-
-interface RefNode extends Text {
-  ref?: (node: Node) => void;
 }
 
 function appendChild(parent: Node, child: JSX.Element) {
   if (typeof child === "function") {
-    const anchor = document.createTextNode("");
-    parent.appendChild(anchor);
-
     let oldNodes: JSX.Element[] = [];
 
     effect(() => {
       const result = child();
+
       const newNodes = normalizeDom(result);
+      // console.log(child);
 
-      const parentNode = anchor.parentNode;
-      if (!parentNode) return;
-
-      patch(parentNode, oldNodes, newNodes, anchor);
+      patch(parent, oldNodes, newNodes);
+      // handleRef(result);
     });
   } else if (Array.isArray(child)) {
-    const fragment = document.createDocumentFragment();
-    child.forEach((nested) => appendChild(fragment, nested));
-    parent.appendChild(fragment);
+    child.forEach((nested) => appendChild(parent, nested));
   } else {
-    const childRef = getNode(child) as RefNode;
-
-    parent.appendChild(childRef);
-    childRef.ref?.(childRef);
-    delete childRef.ref;
+    const result = getNode(child) as Node;
+    parent.appendChild(result);
+    handleRef(result);
   }
+}
+
+function handleRef(_node: Node) {
+  interface RefNode extends Text {
+    ref?: (node: Node) => void;
+  }
+
+  const node = _node as RefNode;
+
+  if ("ref" in node) {
+    node.ref?.(node);
+    delete node.ref;
+    console.log(node.parentNode);
+    return node;
+  }
+
+  return node as Node;
 }
 
 function patch(
@@ -53,57 +55,55 @@ function patch(
   const maxLength = Math.max(oldNodes.length, newNodes.length);
 
   for (let i = 0; i < maxLength; i++) {
-    const oldNode = getNode(oldNodes[i]);
-    const newNode = getNode(newNodes[i]);
+    let oldNode = getNode(oldNodes[i]);
+    let newNode = getNode(newNodes[i]);
+
+    // console.log(oldNode, newNode);
 
     // Remove old node if new one doesn't exist
     if (!isNil(oldNode) && isNil(newNode) && oldNode instanceof HTMLElement) {
       parentNode.removeChild(oldNode);
       oldNodes.splice(i, 1);
       i--;
-      continue;
     }
-
     // Add new node if cached one doesn't exist
-    if (isNil(oldNode) && !isNil(newNode)) {
+    else if (isNil(oldNode) && !isNil(newNode)) {
       parentNode.insertBefore(newNode, anchor);
-      oldNodes[i] = newNode;
-      continue;
+      oldNodes[i] = handleRef(newNode);
     }
 
     // Update existing node
-    if (isNil(oldNode) || isNil(newNode)) {
+    else if (isNil(oldNode) || isNil(newNode)) {
       // Only proceed if both nodes exist
-      continue;
     }
 
     // Handle text-to-text update
-    if (oldNode instanceof Text && newNode instanceof Text) {
+    else if (oldNode instanceof Text && newNode instanceof Text) {
       oldNode.textContent = newNode.textContent;
-      continue;
     }
 
     // From here, we know cachedNode is an HTMLElement
-    if (!(oldNode instanceof HTMLElement)) {
-      continue;
+    else if (!(oldNode instanceof HTMLElement)) {
+      // continue;
     }
 
     // Case: HTMLElement → HTMLElement
-    if (newNode instanceof HTMLElement) {
+    else if (newNode instanceof HTMLElement) {
       const isSame = oldNode.isEqualNode(newNode);
 
       if (!isSame) {
         oldNode.replaceWith(newNode);
-        oldNodes[i] = newNode;
+        oldNodes[i] = handleRef(newNode);
       }
-
-      continue;
     }
-
     // Case: HTMLElement → Text
-    if (newNode instanceof Text) {
+    else if (newNode instanceof Text) {
       oldNode.replaceWith(newNode);
-      oldNodes[i] = newNode;
+      oldNodes[i] = handleRef(newNode);
     }
+
+    // if (newNode instanceof Comment) {
+    //   newNodes[i] = newNode.ref(newNode);
+    // }
   }
 }

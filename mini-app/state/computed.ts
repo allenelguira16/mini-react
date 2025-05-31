@@ -3,6 +3,7 @@ import { effectify, track, trigger } from "./effect";
 export function computed<T>(getter: () => T): { readonly value: T } {
   let cachedValue: T;
   let dirty = true;
+  let initialized = false;
 
   const obj = {
     get value(): T {
@@ -10,7 +11,8 @@ export function computed<T>(getter: () => T): { readonly value: T } {
         run();
         dirty = false;
       }
-      track(obj, "value"); // allow others to depend on this computed
+      initialized = true;
+      track(obj);
       return cachedValue;
     },
     set value(_: unknown) {
@@ -21,7 +23,12 @@ export function computed<T>(getter: () => T): { readonly value: T } {
   const run = effectify(() => {
     cachedValue = getter();
     dirty = false;
-    trigger(obj, "value");
+
+    if (initialized) {
+      queueMicrotask(() => {
+        trigger(obj);
+      });
+    }
   });
 
   return obj;

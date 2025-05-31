@@ -4,18 +4,29 @@ import { name } from "./globalState";
 type SortDirection = "asc" | "desc";
 
 export const DropdownList = () => {
-  const currentDirection = state<SortDirection>("asc");
-  const numbers = state([1, 2, 3]);
+  const dir = state<SortDirection>("asc");
+  const numbers = state([1, 2, 3, 4, 5, 6, 7, 8]);
 
-  const handleSort = (dir: SortDirection) => () => {
-    currentDirection.value = dir === "asc" ? "desc" : "asc";
-
+  const handleSort = () => {
     numbers.value = numbers.value.sort((a, b) => {
-      return currentDirection.value === "desc" ? a - b : b - a;
+      return dir.value === "desc" ? a - b : b - a;
     });
+    dir.value = dir.value === "asc" ? "desc" : "asc";
+  };
+
+  const handleRandomize = () => {
+    const result = numbers.value;
+    for (let i = result.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [result[i], result[j]] = [result[j], result[i]];
+    }
+
+    numbers.value = result;
   };
 
   const addDropdown = () => {
+    if (numbers.value.length >= 8) return;
+
     if (!numbers.value.length) {
       numbers.value = [1];
     } else {
@@ -30,18 +41,25 @@ export const DropdownList = () => {
   };
 
   return (
-    <div>
+    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
       <div>
-        <span>Add Dropdown</span>
-        <button onClick={addDropdown}>Add</button>
-        <button onClick={removeDropdown}>Remove</button>
+        <div>
+          <span style={{ marginRight: "10px" }}>Add Dropdown</span>
+          <button onClick={addDropdown}>Add</button>
+          <button onClick={removeDropdown}>Remove</button>
+        </div>
       </div>
       <div>
-        <span>Sort</span>
-        <button onClick={handleSort("asc")}>Ascending</button>
-        <button onClick={handleSort("desc")}>Descending</button>
+        <span style={{ marginRight: "10px" }}>Sort</span>
+        <button onClick={handleSort} style={{ width: "90px" }}>
+          {dir.value === "asc" ? "Descending" : "Ascending"}
+        </button>
+        <button onClick={handleRandomize}>Randomize</button>
       </div>
       <div style={{ display: "flex" }}>
+        {/* {numbers.value.map((number) => (
+          <Dropdown number={number} />
+        ))} */}
         <For items={numbers.value} fallback={<div>hi</div>}>
           {(number) => <Dropdown number={number} />}
         </For>
@@ -51,25 +69,27 @@ export const DropdownList = () => {
 };
 
 const Dropdown = ({ number }: { number: number }) => {
+  let divElement!: HTMLElement;
   const isOpen = state(false);
 
   const handleToggle = () => {
     isOpen.value = !isOpen.value;
+    console.log(divElement);
   };
 
   effect(() => {
-    // console.log(isOpen.value);
+    isOpen.value;
 
     return () => {
-      // console.log("hi");
+      console.log("hi");
     };
   });
 
   return (
-    <div style={{ position: "relative" }}>
+    <div ref={divElement} style={{ position: "relative" }}>
       <div>
         <button onClick={handleToggle}>Open Dropdown {number}</button>
-        <div>Hi {name.value}</div>
+        <div style={{ wordBreak: "break-word" }}>Hi {name.value}</div>
       </div>
       {isOpen.value && (
         <div style={{ position: "absolute" }}>

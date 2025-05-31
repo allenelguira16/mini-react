@@ -18,11 +18,20 @@ export function h(
 
   handleProps($element, props);
 
-  $element.appendChild(handleChildren(children));
+  handleChildren($element, children);
 
   return $element;
 }
 
 export function Fragment({ children }: { children: any[] }) {
-  return children;
+  const placeholder = document.createComment(" FRAGMENT ANCHOR ");
+
+  (placeholder as any).ref = (anchor: Node) => {
+    if (!anchor.parentNode || !(anchor.parentNode instanceof HTMLElement))
+      return;
+
+    handleChildren(anchor.parentNode, children);
+  };
+
+  return placeholder;
 }

@@ -4,7 +4,7 @@ import { name } from "./globalState";
 export const Forms = () => {
   return (
     <div>
-      <div>Hi {name.value}</div>
+      <div style={{ wordBreak: "break-word" }}>Hi {name.value}</div>
       <div>
         <input type="text" value={name.value} />
       </div>
@@ -21,18 +21,25 @@ function Counter() {
   const double = computed(() => count.value * 2);
 
   effect(() => {
-    console.log(double.value);
+    count.value;
+    console.log("First");
+  });
+
+  effect(() => {
+    double.value;
+    console.log("Second");
   });
 
   const handleCount = () => {
     count.value++;
+    // double.value = count.value * 2;
   };
 
   return (
     <div>
       <div>Count: {count.value}</div>
       <div>Double Count: {double.value}</div>
-      <button disabled={count.value > 5} onClick={handleCount}>
+      <button disabled={count.value >= 5} onClick={handleCount}>
         Add counter
       </button>
       <div>{count.value <= 3 ? <div>Hi</div> : "string"}</div>
@@ -43,7 +50,7 @@ function Counter() {
 function Input() {
   return (
     <div>
-      <div>Name {name.value}</div>
+      <div style={{ wordBreak: "break-word" }}>Name {name.value}</div>
       <input
         type="text"
         onInput={(event: KeyboardEvent) => {

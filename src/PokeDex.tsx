@@ -22,8 +22,6 @@ export const PokeDex = () => {
   const currentDirection = state<SortDirection>("asc");
 
   const fetchPokeDexData = (url: string | null) => async () => {
-    console.log("called");
-
     if (!url) return;
 
     isLoading.value = true;
@@ -31,11 +29,12 @@ export const PokeDex = () => {
     const response = await fetch(url);
     const json = (await response.json()) as PokeDexData;
 
-    console.log(json);
-    pokeDexList.value = json.results;
-    prevLink.value = json.previous?.replace(/limit=\d+/, "limit=20") ?? "";
-    nextLink.value = json.next?.replace(/limit=\d+/, "limit=20") ?? "";
-    isLoading.value = false;
+    setTimeout(() => {
+      pokeDexList.value = json.results;
+      prevLink.value = json.previous?.replace(/limit=\d+/, "limit=20") ?? "";
+      nextLink.value = json.next?.replace(/limit=\d+/, "limit=20") ?? "";
+      isLoading.value = false;
+    }, 1000);
   };
 
   effect(async () => {
@@ -43,6 +42,24 @@ export const PokeDex = () => {
     await fetchPokeDexData(
       "https://pokeapi.co/api/v2/pokemon/?offset=1100&limit=20"
     )();
+  });
+
+  effect(() => {
+    // console.log(
+    //   !isLoading.value && (
+    //     <div>
+    //       <For items={pokeDexList.value} key={({ name }) => name}>
+    //         {({ name, url }) => (
+    //           <tr>
+    //             <td>{name}</td>
+    //             <td onClick={() => alert(url)}>{url}</td>
+    //           </tr>
+    //         )}
+    //       </For>
+    //     </div>
+    //   )
+    // );
+    // console.log(pokeDexList.value);
   });
 
   const handleSort = (key: SortKey, dir: SortDirection) => () => {
@@ -53,60 +70,69 @@ export const PokeDex = () => {
     });
   };
 
-  effect(() => {
-    // console.log(pokeDexList.value);
-  });
+  console.log("rerender");
 
   return (
     <div>
-      <div>Hi {name.value}</div>
-      {isLoading.value && <div>loading</div>}
-      {!isLoading.value && (
-        <>
-          <table>
-            <thead>
+      <div style={{ wordBreak: "break-word" }}>Hi {name.value}</div>
+      <table>
+        <thead>
+          <tr>
+            <th
+              onClick={handleSort("name", currentDirection.value)}
+              style={{ userSelect: "none", cursor: "pointer" }}
+            >
+              Name
+            </th>
+            <th
+              onClick={handleSort("url", currentDirection.value)}
+              style={{ userSelect: "none", cursor: "pointer" }}
+            >
+              URL
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {isLoading.value && (
+            <tr>
+              <td rowspan="20" colspan="2">
+                Loading
+              </td>
+            </tr>
+          )}
+          {/* {!isLoading.value &&
+            pokeDexList.value.map(({ name, url }) => (
               <tr>
-                <th
-                  onClick={handleSort("name", currentDirection.value)}
-                  style={{ userSelect: "none", cursor: "pointer" }}
-                >
-                  Name
-                </th>
-                <th
-                  onClick={handleSort("url", currentDirection.value)}
-                  style={{ userSelect: "none", cursor: "pointer" }}
-                >
-                  URL
-                </th>
+                <td>{name}</td>
+                <td onClick={() => alert(url)}>{url}</td>
               </tr>
-            </thead>
-            <tbody>
-              <For items={pokeDexList.value} key={({ name }) => name}>
-                {({ name, url }) => (
-                  <tr>
-                    <td>{name}</td>
-                    <td onClick={() => alert(url)}>{url}</td>
-                  </tr>
-                )}
-              </For>
-            </tbody>
-          </table>
-          <div>
-            <button
-              onClick={fetchPokeDexData(prevLink.value)}
-              disabled={isLoading.value || !prevLink.value}
-            >
-              Previous
-            </button>
-            <button
-              onClick={fetchPokeDexData(nextLink.value)}
-              disabled={isLoading.value || !nextLink.value}
-            >
-              Next
-            </button>
-          </div>
-        </>
-      )}
+            ))} */}
+          {!isLoading.value && (
+            <For items={pokeDexList.value} key={({ name }) => name}>
+              {({ name, url }) => (
+                <tr>
+                  <td>{name}</td>
+                  <td onClick={() => alert(url)}>{url}</td>
+                </tr>
+              )}
+            </For>
+          )}
+        </tbody>
+      </table>
+      <div>
+        <button
+          onClick={fetchPokeDexData(prevLink.value)}
+          disabled={isLoading.value || !prevLink.value}
+        >
+          Previous
+        </button>
+        <button
+          onClick={fetchPokeDexData(nextLink.value)}
+          disabled={isLoading.value || !nextLink.value}
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 };
