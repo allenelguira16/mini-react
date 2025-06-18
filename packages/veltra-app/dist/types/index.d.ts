@@ -35,7 +35,7 @@ declare function loop<T>(items: T[]): {
 
 declare function memo<T>(fn: () => T): () => T;
 
-declare function cleanLog($nodes: Node[]): Node | Node[];
+declare function logJsx($nodes: Node[]): Node | Node[];
 
-export { Suspense, cleanLog, computed, createRoot, effect, h, hSSR, loop, memo, onDestroy, onMount, state, untrack };
+export { Suspense, computed, createRoot, effect, h, hSSR, logJsx, loop, memo, onDestroy, onMount, state, untrack };
 export type { State };

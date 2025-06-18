@@ -11,4 +11,4 @@ export {
   Suspense,
   type State,
 } from "./runtime";
-export { loop, memo, cleanLog } from "./util";
+export { loop, memo, logJsx } from "./util";

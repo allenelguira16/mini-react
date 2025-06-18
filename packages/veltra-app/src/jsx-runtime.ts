@@ -1,4 +1,3 @@
-// import { Fragment } from "./components";
 import { IS_SSR } from "./const";
 import { h, hSSR } from "./runtime";
 import { toArray } from "./util";
