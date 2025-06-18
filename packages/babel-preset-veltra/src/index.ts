@@ -1,7 +1,7 @@
 import { TransformOptions, ConfigAPI } from "@babel/core";
-import { babelPlugin } from "./babel-plugin";
 // @ts-ignore
 import babelReactPlugin from "@babel/preset-react";
+import { loopMapPlugin, wrapJSXExpressionsPlugin } from "./plugins";
 
 // Main preset function
 export default function babelPresetVeltra(api: ConfigAPI): TransformOptions {
@@ -17,6 +17,6 @@ export default function babelPresetVeltra(api: ConfigAPI): TransformOptions {
         },
       ],
     ],
-    plugins: [babelPlugin],
+    plugins: [loopMapPlugin, wrapJSXExpressionsPlugin],
   };
 }

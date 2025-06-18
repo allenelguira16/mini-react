@@ -1,29 +1,52 @@
-import { Subscriber, watchSubscriber } from "./subscriber";
+// Effect function type with dependency tracking
+export type EffectFn = (() => void) & { deps?: Set<EffectFn>[] };
 
-let effectContext: Subscriber[] | null = null;
+// Currently active effect (global context for dependency collection)
+export let activeEffect: EffectFn | null = null;
 
-export function setEffectContext(stack: Subscriber[]) {
-  effectContext = stack;
+let effectContext: EffectFn[] | null = null;
+
+export function setActiveEffect(newActiveEffect: EffectFn | null) {
+  activeEffect = newActiveEffect;
+}
+
+export function setEffectContext(newEffectContext: EffectFn[] | null) {
+  effectContext = newEffectContext;
 }
 
 export function detachEffectContext() {
   effectContext = null;
 }
 
-export function removeEffect(subscriber: Subscriber) {
-  if (!subscriber.subscriptions) return;
+export function effect(fn: () => void): () => void {
+  const wrappedEffect: EffectFn = () => {
+    removeEffect(wrappedEffect);
 
-  for (const subscription of subscriber.subscriptions) {
-    subscriber.subscriptions.delete(subscription);
+    const previousEffect = activeEffect; // save previous activeEffect
+    activeEffect = wrappedEffect;
+
+    if (effectContext) {
+      effectContext.push(wrappedEffect); // keep your effectContext intact
+    }
+
+    try {
+      fn();
+    } finally {
+      activeEffect = previousEffect; // restore outer activeEffect
+    }
+  };
+
+  wrappedEffect.deps = [];
+  wrappedEffect();
+
+  return () => removeEffect(wrappedEffect);
+}
+
+export function removeEffect(effect: EffectFn) {
+  if (effect.deps) {
+    for (const depSet of effect.deps) {
+      depSet.delete(effect); // Remove this effect from all dependency sets
+    }
+    effect.deps.length = 0; // Reset dependency list
   }
-}
-
-export function effect(fn: Subscriber) {
-  return wrapEffect(fn);
-}
-
-export function wrapEffect(fn: Subscriber): () => void {
-  const subs: Subscriber = () => fn();
-  effectContext?.push(subs);
-  return watchSubscriber(subs);
 }

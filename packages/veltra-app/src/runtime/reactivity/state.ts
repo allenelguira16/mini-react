@@ -1,12 +1,8 @@
-import { track, trigger } from "./track";
+import { track, trigger } from "./effect";
 
-export type State<T> = {
-  value: T;
-};
-
-export function state<T>(initialValue: T): State<T>;
-export function state<T = undefined>(): State<T | undefined>;
-export function state<T>(initialValue?: T): State<T | undefined> {
+export function state<T>(initialValue: T): { value: T };
+export function state<T = undefined>(): { value: T | undefined };
+export function state<T>(initialValue?: T): { value: T | undefined } {
   const state = { value: initialValue };
 
   return new Proxy(state, {

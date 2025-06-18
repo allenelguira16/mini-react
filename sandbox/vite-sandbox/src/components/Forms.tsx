@@ -26,13 +26,13 @@ function Counter() {
     count.value++;
   };
 
-  // effect(() => {
-  //   console.log(count.value);
-  // });
+  effect(() => {
+    console.log(count.value);
+  });
 
-  // effect(() => {
-  //   console.log(double.value);
-  // });
+  effect(() => {
+    console.log(double.value);
+  });
 
   return (
     <div>

@@ -1,4 +1,4 @@
-import { reactor } from "../state";
+import { effect as reactor } from "../state";
 import { UNIT_LESS_PROPS } from "~/const";
 
 export function applyProps(

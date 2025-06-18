@@ -1,4 +1,4 @@
-import { effect, loop, state } from "@veltra/app";
+import { effect, state } from "@veltra/app";
 
 import { name } from "../globalState";
 
@@ -82,29 +82,33 @@ export const PokeDex = () => {
           </tr>
         </thead>
         <tbody>
-          {isLoading.value &&
-            loop(Array.from({ length: 20 }).map((_, i) => i + 1)).each(
-              (number) => (
+          <>
+            {isLoading.value &&
+              Array.from({ length: 20 })
+                .map((_, i) => i + 1)
+                .map((number) => (
+                  <tr>
+                    <td colspan="3" class="h-[24px] text-center">
+                      {number === 10 && "loading..."}
+                    </td>
+                  </tr>
+                ))}
+          </>
+          <>
+            {!isLoading.value &&
+              pokeDexList.value.map(({ name, url }, index) => (
                 <tr>
-                  <td colspan="3" class="h-[24px] text-center">
-                    {number === 10 && "loading..."}
+                  <td class="w-1/3 text-center">{index + 1}</td>
+                  <td class="w-1/3 text-center truncate">{name}</td>
+                  <td
+                    class="w-1/3 text-center truncate"
+                    onClick={() => alert(url)}
+                  >
+                    {url}
                   </td>
                 </tr>
-              )
-            )}
-          {!isLoading.value &&
-            loop(pokeDexList.value).each(({ name, url }, index) => (
-              <tr>
-                <td class="w-1/3 text-center">{index.value + 1}</td>
-                <td class="w-1/3 text-center truncate">{name}</td>
-                <td
-                  class="w-1/3 text-center truncate"
-                  onClick={() => alert(url)}
-                >
-                  {url}
-                </td>
-              </tr>
-            ))}
+              ))}
+          </>
           {/* {isLoading.value &&
             Array.from({ length: 20 })
               .map((_, i) => i + 1)

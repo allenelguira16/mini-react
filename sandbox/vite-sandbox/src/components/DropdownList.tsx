@@ -1,7 +1,6 @@
 import {
   computed,
   effect,
-  loop,
   memo,
   onDestroy,
   onMount,
@@ -18,13 +17,13 @@ export const Dropdowns = () => {
   const dir = state<SortDirection>("asc");
   const numbers = state([1, 2, 3, 4, 5, 6, 7, 8]);
 
-  // onMount(() => {
-  //   console.log("Dropdown List onMount");
-  // });
+  onMount(() => {
+    console.log("Dropdown List onMount");
+  });
 
-  // onDestroy(() => {
-  //   console.log("Dropdown List onDestroy");
-  // });
+  onDestroy(() => {
+    console.log("Dropdown List onDestroy");
+  });
   console.log("Dropdowns");
 
   const handleSort = () => {
@@ -109,48 +108,17 @@ export const Dropdowns = () => {
 
 const DropdownList = ({ numbers }: { numbers: State<number[]> }) => {
   const doubledNumbers = computed(() => numbers.value.map((n) => n * 2));
-  // const doubledNumbers = memo(() => numbers.value.map((n) => n * 2));
 
   effect(() => {
-    console.log(numbers.value);
-    // console.log(untrack(() => doubledNumbers.value));
-    // console.log(doubledNumbers());
-    // console.log(numbers.value);
-  }); // logging multiple times
+    console.log(doubledNumbers.value);
+  });
   console.log("only log once");
-
-  onMount(() => {
-    console.log("hola~");
-  });
-
-  onDestroy(() => {
-    console.log("bye~");
-  });
-
-  // const item = memo(() =>
-  //   loop(numbers.value).each((number) => <Dropdown number={number} />)
-  // );
 
   return (
     <>
-      <>
-        {/* <For items={numbers.value}>
-        {(number) => (
-          <>
-            <Dropdown number={number} />
-          </>
-        )}
-      </For> */}
-        <>
-          {/* {} */}
-          {/* {numbers.value.map((number) => (
-          <Dropdown number={number} />
-        ))} */}
-        </>
-        {loop(numbers.value).each((number) => (
-          <Dropdown number={number} />
-        ))}
-      </>
+      {numbers.value.map((number) => (
+        <Dropdown number={number} />
+      ))}
     </>
   );
 };
@@ -163,13 +131,7 @@ const Dropdown = ({ number }: { number: number }) => {
     isOpen.value = !isOpen.value;
   };
 
-  // effect(() => {
-  //   console.log(isOpen.value);
-  // });
-  // console.log
   const value = Array.from({ length: 3 }).map((_, i) => i + 1);
-
-  // console.log("dropdown render");
 
   return (
     <div ref={divElement} class="relative lg:w-[calc(100%/8)]">
@@ -192,13 +154,6 @@ const Dropdown = ({ number }: { number: number }) => {
                 Dropdown {item}
               </li>
             ))} */}
-            {/* <For items={value}>
-              {(item) => (
-                <li class="cursor-pointer p-2 rounded hover:bg-gray-100">
-                  Dropdown {item}
-                </li>
-              )}
-            </For> */}
           </ul>
         </div>
       )}

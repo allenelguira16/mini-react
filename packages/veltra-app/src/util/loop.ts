@@ -1,7 +1,7 @@
 import { jsx } from "~/jsx-runtime";
 import { onDestroy, onMount, runComponentCleanup } from "~/runtime/life-cycle";
 import { componentRootNodes } from "~/runtime/render";
-import { reactor, State, state, untrack } from "~/runtime/state";
+import { effect as reactor, State, state, untrack } from "~/runtime/state";
 import { toArray } from "~/util";
 
 type ForProps<T> = {

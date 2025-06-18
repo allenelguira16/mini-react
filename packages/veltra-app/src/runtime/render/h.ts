@@ -2,12 +2,17 @@ import { renderChildren } from "./render-children";
 import { applyProps } from "./apply-props";
 import { mountComponent } from "./mount-component";
 import { MATH_ML_TAGS, SVG_TAGS } from "~/const";
+import { Fragment } from "~/jsx-runtime";
 
 export function h(
   type: string | Function,
   props: Record<string, any>,
   children: JSX.Element[]
 ) {
+  if (type === Fragment) {
+    return children;
+  }
+
   if (typeof type === "function") {
     return mountComponent(type, props, children);
   }

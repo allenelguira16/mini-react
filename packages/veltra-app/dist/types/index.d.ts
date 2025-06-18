@@ -9,16 +9,12 @@ type State<T> = {
 declare function state<T>(initialValue: T): State<T>;
 declare function state<T = undefined>(): State<T | undefined>;
 
-type Subscriber = {
-    (): void;
-    subscriptions?: Set<Subscriber>;
-};
+declare function effect(fn: () => void): () => void;
 
-declare function effect(fn: Subscriber): () => void;
-
-declare function computed<T>(fn: () => T): {
+type Computed<T> = {
     readonly value: T;
 };
+declare function computed<T>(getter: () => T): Computed<T>;
 
 declare function untrack<T>(fn: () => T): T;
 
@@ -26,7 +22,12 @@ declare function h(type: string | Function, props: Record<string, any>, children
 
 declare function hSSR(type: string | Function, props: Record<string, any>, children: JSX.Element[]): any;
 
-declare function createRoot($root: HTMLElement, app: JSX.Element): void;
+declare function createRoot($root: HTMLElement, App: () => JSX.Element): void;
+
+declare function Suspense(props: {
+    fallback: JSX.Element;
+    children: () => JSX.Element;
+}): Text;
 
 declare function loop<T>(items: T[]): {
     each: (children: (item: T, index: State<number>) => JSX.Element) => any;
@@ -36,5 +37,5 @@ declare function memo<T>(fn: () => T): () => T;
 
 declare function cleanLog($nodes: Node[]): Node | Node[];
 
-export { cleanLog, computed, createRoot, effect, h, hSSR, loop, memo, onDestroy, onMount, state, untrack };
+export { Suspense, cleanLog, computed, createRoot, effect, h, hSSR, loop, memo, onDestroy, onMount, state, untrack };
 export type { State };

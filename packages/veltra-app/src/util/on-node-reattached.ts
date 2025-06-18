@@ -15,7 +15,7 @@ export function onNodeReattached(callback: () => void, $node: Node) {
 
   queueMicrotask(() => {
     if (!$node.parentNode) {
-      throw new Error("[veltra]: Target node is not on dom tree");
+      return;
     }
 
     observer.observe($node.parentNode, { childList: true, subtree: true });

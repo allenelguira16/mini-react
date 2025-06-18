@@ -17,15 +17,19 @@ export function mountComponent(
   const lifecycleContext: LifecycleContext = {
     mount: [],
     effect: [],
-    reactor: [],
+    // reactor: [],
     destroy: [],
   };
 
   initializeLifecycleContext(lifecycleContext);
 
   let $node = type({ ...props, children });
+  let $target = $node;
 
-  let $target = Array.isArray($node) ? $node[0] : $node;
+  if (Array.isArray($node)) {
+    $target = document.createTextNode("");
+    $node.unshift($target);
+  }
 
   registerLifeCycles(lifecycleContext, $target);
 

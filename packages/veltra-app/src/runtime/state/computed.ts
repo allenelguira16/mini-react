@@ -1,29 +1,20 @@
-import { Subscriber, watchSubscriber, getSubscriber } from "./subscriber";
+import { state } from "./state"; // your Veltra's state()
+import { effect } from "./effect";
 
-export function computed<T>(fn: () => T) {
-  let value: T;
-  let subscriptions = new Set<Subscriber>();
+export type Computed<T> = {
+  readonly value: T;
+};
 
-  const subscriber: Subscriber = () => {
-    // When a dependency changes, recompute:
-    value = fn();
-    // Notify anything that depends on this computed:
-    subscriptions.forEach((sub) => sub());
-  };
+export function computed<T>(getter: () => T): Computed<T> {
+  const result = state<T>(); // Real state that reactors and effects can track
 
-  // First run to collect dependencies:
-  watchSubscriber(subscriber);
-  value = fn(); // compute initial value
+  effect(() => {
+    result.value = getter(); // when dependencies change, recompute and trigger .value
+  });
 
   return {
     get value() {
-      // When someone accesses this computed, register as a dependency:
-      const subscriber = getSubscriber();
-      if (subscriber && !subscriptions.has(subscriber)) {
-        subscriptions.add(subscriber);
-        subscriber.subscriptions = subscriptions;
-      }
-      return value;
+      return result.value as T; // will track this as a true state()
     },
   };
 }

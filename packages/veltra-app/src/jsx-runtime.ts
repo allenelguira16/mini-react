@@ -15,8 +15,6 @@ const jsx = (type: any, { children = [], ...props }: any) => {
 };
 
 function Fragment({ children }: { children: any[] }) {
-  const $placeholder = document.createTextNode("");
-  children.unshift($placeholder);
   return children;
 }
 

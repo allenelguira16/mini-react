@@ -1,297 +1,260 @@
-import { declare } from "@babel/helper-plugin-utils";
-import * as t from "@babel/types";
-import { wrapExpressionInArrow } from "./utils";
-import { NodePath, PluginPass } from "@babel/core";
+// import { declare } from "@babel/helper-plugin-utils";
+// import * as t from "@babel/types";
+// import { wrapExpressionInArrow } from "./utils";
+// import { NodePath, PluginPass } from "@babel/core";
 
-const veltraImports = new Set<string>();
+// const veltraImports = new Set<string>();
+// const importedNames = new Map<string, string>(); // importedName -> localName
+// let shouldInjectLoop = false;
+// let shouldInjectCleanLog = false;
 
-function handleImports(path: NodePath<t.Program>, state: PluginPass) {
-  const isInVeltraApp = state.filename && state.filename.includes("veltra-app");
-  if (isInVeltraApp) return;
+// function handleImports(path: NodePath<t.Program>, state: PluginPass) {
+//   const isInVeltraApp = state.filename && state.filename.includes("veltra-app");
+//   if (isInVeltraApp) return;
 
-  let hasMemoImport = false;
-  let hasCleanLogImport = false;
+//   path.traverse({
+//     ImportDeclaration(importPath) {
+//       const importSource = importPath.node.source.value;
 
-  path.traverse({
-    ImportDeclaration(importPath) {
-      const importSource = importPath.node.source.value;
+//       if (importSource === "@veltra/app") {
+//         importPath.node.specifiers.forEach((specifier) => {
+//           if (t.isImportSpecifier(specifier)) {
+//             const imported = specifier.imported.name;
+//             const local = specifier.local.name;
+//             importedNames.set(imported, local);
+//             if (imported === "loop" || imported === "cleanLog") {
+//               veltraImports.add(local); // marks both loop & cleanLog as from @veltra/app
+//             }
+//           }
+//         });
+//       }
+//     },
+//   });
+// }
 
-      if (importSource === "@veltra/app") {
-        importPath.node.specifiers.forEach((specifier) => {
-          if (t.isImportSpecifier(specifier)) {
-            let importedName = "";
-            if (t.isIdentifier(specifier.imported)) {
-              importedName = specifier.imported.name;
-            } else if (t.isStringLiteral(specifier.imported)) {
-              importedName = specifier.imported.value;
-            }
+// function injectMissingImports(path: NodePath<t.Program>, state: PluginPass) {
+//   const isInVeltraApp = state.filename && state.filename.includes("veltra-app");
+//   if (isInVeltraApp) return; // 🚫 Don't inject inside @veltra/app itself
 
-            const localName = specifier.local.name; // ← actual used name (could be aliased)
+//   if (!importedNames.has("loop") && shouldInjectLoop) {
+//     const loopImport = t.importDeclaration(
+//       [t.importSpecifier(t.identifier("loop"), t.identifier("loop"))],
+//       t.stringLiteral("@veltra/app")
+//     );
+//     path.node.body.unshift(loopImport);
+//   }
 
-            if (importedName === "loop") {
-              veltraImports.add(localName); // ← this could now be "loop" or "looper" or any alias
-            }
-          }
-        });
+//   if (!importedNames.has("cleanLog") && shouldInjectCleanLog) {
+//     const cleanLogImport = t.importDeclaration(
+//       [t.importSpecifier(t.identifier("cleanLog"), t.identifier("cleanLog"))],
+//       t.stringLiteral("@veltra/app") // now from @veltra/app as per your fix
+//     );
+//     path.node.body.unshift(cleanLogImport);
+//   }
+// }
 
-        const specifiers = importPath.node.specifiers;
+// function handleCallExpression(path: NodePath<t.CallExpression>) {
+//   const callee = path.node.callee;
 
-        const hasMemo = specifiers.some(
-          (s) =>
-            t.isImportSpecifier(s) &&
-            t.isIdentifier(s.imported, { name: "memo" })
-        );
+//   const isConsole =
+//     t.isMemberExpression(callee) &&
+//     t.isIdentifier(callee.object, { name: "console" });
 
-        const hasCleanLog = specifiers.some(
-          (s) =>
-            t.isImportSpecifier(s) &&
-            t.isIdentifier(s.imported, { name: "cleanLog" })
-        );
+//   if (isConsole) {
+//     shouldInjectCleanLog = true;
 
-        if (!hasMemo) {
-          specifiers.push(
-            t.importSpecifier(t.identifier("memo"), t.identifier("memo"))
-          );
-        }
-        if (!hasCleanLog) {
-          specifiers.push(
-            t.importSpecifier(
-              t.identifier("cleanLog"),
-              t.identifier("cleanLog")
-            )
-          );
-        }
+//     const cleanLogName = importedNames.get("cleanLog") || "cleanLog";
 
-        hasMemoImport = hasMemoImport || hasMemo;
-        hasCleanLogImport = hasCleanLogImport || hasCleanLog;
-      }
-    },
-  });
+//     path.node.arguments = path.node.arguments.map((arg) => {
+//       if (t.isJSXElement(arg) || t.isJSXFragment(arg)) {
+//         return t.callExpression(t.identifier(cleanLogName), [arg]);
+//       }
+//       return arg;
+//     });
+//     return;
+//   }
 
-  if (!hasMemoImport) {
-    path.node.body.unshift(
-      t.importDeclaration(
-        [t.importSpecifier(t.identifier("memo"), t.identifier("memo"))],
-        t.stringLiteral("@veltra/app")
-      )
-    );
-  }
+//   // handle loop direct call e.g., loop(items)
+//   if (
+//     t.isCallExpression(path.node) &&
+//     t.isIdentifier(path.node.callee) &&
+//     veltraImports.has(path.node.callee.name)
+//   ) {
+//     const arg = path.node.arguments[0];
+//     if (!t.isFunction(arg) && t.isExpression(arg)) {
+//       path.node.arguments[0] = t.arrowFunctionExpression([], arg);
+//     }
+//   }
+// }
 
-  if (!hasCleanLogImport) {
-    path.node.body.unshift(
-      t.importDeclaration(
-        [t.importSpecifier(t.identifier("cleanLog"), t.identifier("cleanLog"))],
-        t.stringLiteral("@veltra/app")
-      )
-    );
-  }
-}
+// function handleJSXExpressionContainer(
+//   path: NodePath<t.JSXExpressionContainer>
+// ) {
+//   const expr = path.node.expression;
 
-function handleCallExpression(path: NodePath<t.CallExpression>) {
-  const callee = path.node.callee;
+//   if (
+//     !t.isJSXEmptyExpression(expr) &&
+//     !t.isJSXElement(expr) &&
+//     !t.isJSXFragment(expr)
+//   ) {
+//     path.node.expression = wrapExpressionInArrow(expr);
+//   }
+// }
 
-  // Check for console.* calls
-  const isConsole =
-    t.isMemberExpression(callee) &&
-    t.isIdentifier(callee.object, { name: "console" });
+// function handleJSXAttribute(path: NodePath<t.JSXAttribute>) {
+//   const attr = path.node;
 
-  if (isConsole) {
-    path.node.arguments = path.node.arguments.map((arg) => {
-      if (t.isJSXElement(arg) || t.isJSXFragment(arg)) {
-        return t.callExpression(t.identifier("cleanLog"), [arg]);
-      }
-      return arg;
-    });
-    return;
-  }
+//   if (
+//     t.isJSXIdentifier(attr.name, { name: "ref" }) &&
+//     t.isJSXExpressionContainer(attr.value)
+//   ) {
+//     const expression = attr.value.expression;
+//     if (t.isIdentifier(expression)) {
+//       const param = t.identifier("el");
+//       const body = t.assignmentExpression("=", expression, param);
+//       attr.value.expression = t.arrowFunctionExpression([param], body);
+//     }
+//   }
 
-  // Handle loop().each()
-  if (
-    t.isCallExpression(path.node) &&
-    t.isIdentifier(path.node.callee) &&
-    veltraImports.has(path.node.callee.name) // check for ANY valid imported alias
-  ) {
-    const binding = path.scope.getBinding(path.node.callee.name);
+//   if (
+//     t.isJSXExpressionContainer(attr.value) &&
+//     (t.isJSXElement(attr.value.expression) ||
+//       t.isJSXFragment(attr.value.expression))
+//   ) {
+//     attr.value.expression = t.arrowFunctionExpression(
+//       [],
+//       attr.value.expression
+//     );
+//   }
+// }
 
-    if (
-      binding &&
-      binding.path.isImportSpecifier() &&
-      binding.path.parentPath &&
-      binding.path.parentPath.isImportDeclaration()
-    ) {
-      const importDecl = binding.path.parentPath.node;
+// function handleLoopJSXExpression(path: NodePath<t.JSXExpressionContainer>) {
+//   const expr = path.node.expression;
 
-      if (importDecl.source.value === "@veltra/app") {
-        const arg = path.node.arguments[0];
-        if (!t.isFunction(arg) && t.isExpression(arg)) {
-          path.node.arguments[0] = t.arrowFunctionExpression([], arg);
-        }
-      }
-    }
-  }
-}
+//   if (
+//     t.isCallExpression(expr) &&
+//     t.isMemberExpression(expr.callee) &&
+//     t.isCallExpression(expr.callee.object) &&
+//     t.isIdentifier(expr.callee.object.callee)
+//   ) {
+//     const loopCalleeName = expr.callee.object.callee.name;
+//     if (
+//       importedNames.get("loop") === loopCalleeName ||
+//       loopCalleeName === "loop"
+//     ) {
+//       const arg = expr.callee.object.arguments[0];
+//       if (!t.isArrowFunctionExpression(arg) && t.isExpression(arg)) {
+//         expr.callee.object.arguments[0] = t.arrowFunctionExpression([], arg);
+//       }
+//     }
+//   }
+// }
 
-function handleJSXExpressionContainer(
-  path: NodePath<t.JSXExpressionContainer>
-) {
-  const expr = path.node.expression;
+// function transformArrayMapToLoop(path: NodePath<t.JSXExpressionContainer>) {
+//   const expr = path.node.expression;
 
-  // Handle cond && <JSXElement>
-  if (
-    t.isLogicalExpression(expr) &&
-    expr.operator === "&&" &&
-    t.isJSXElement(expr.right)
-  ) {
-    const jsxElement = expr.right;
-    const scopePath = path.findParent((p) => p.isProgram() || p.isFunction());
-    const varName = path.scope.generateUidIdentifier("memoized");
+//   if (
+//     t.isCallExpression(expr) &&
+//     t.isMemberExpression(expr.callee) &&
+//     t.isIdentifier(expr.callee.property, { name: "map" }) &&
+//     expr.arguments.length === 1 &&
+//     t.isFunction(expr.arguments[0])
+//   ) {
+//     const callbackFn = expr.arguments[0];
+//     const arrayExpr = expr.callee.object;
 
-    const memoizedVar = t.variableDeclaration("const", [
-      t.variableDeclarator(
-        varName,
-        t.callExpression(t.identifier("memo"), [
-          t.arrowFunctionExpression([], jsxElement),
-        ])
-      ),
-    ]);
+//     const params = callbackFn.params;
+//     const [itemParam, indexParam] = params as t.Identifier[];
 
-    if (scopePath) {
-      if (scopePath.isProgram()) {
-        scopePath.unshiftContainer("body", memoizedVar);
-      } else if (
-        scopePath.isFunctionDeclaration() ||
-        scopePath.isFunctionExpression() ||
-        scopePath.isArrowFunctionExpression()
-      ) {
-        const bodyPath = scopePath.get("body");
-        if (Array.isArray(bodyPath)) {
-          const firstBody = bodyPath[0];
-          if (firstBody && firstBody.isBlockStatement()) {
-            firstBody.unshiftContainer("body", memoizedVar);
-          }
-        } else if (bodyPath.isBlockStatement()) {
-          bodyPath.unshiftContainer("body", memoizedVar);
-        }
-      }
-    }
+//     const callbackBody = t.isBlockStatement(callbackFn.body)
+//       ? callbackFn.body
+//       : t.blockStatement([t.returnStatement(callbackFn.body)]);
 
-    path.node.expression = t.arrowFunctionExpression(
-      [],
-      t.logicalExpression("&&", expr.left, t.callExpression(varName, []))
-    );
+//     // if index exists, wrap its usage in `.value`
+//     if (indexParam) {
+//       const indexName = indexParam.name;
+//       t.traverseFast(callbackBody, (node) => {
+//         if (t.isIdentifier(node, { name: indexName })) {
+//           // Replace index usage with index.value unless part of MemberExpression property
+//           if (
+//             !t.isMemberExpression(node.parent) ||
+//             node.parent.property !== node
+//           ) {
+//             Object.assign(
+//               node,
+//               t.memberExpression(t.identifier(indexName), t.identifier("value"))
+//             );
+//           }
+//         }
+//       });
+//     }
 
-    return;
-  }
+//     const loopLocal = importedNames.get("loop") || "loop";
+//     const loopCall = t.callExpression(t.identifier(loopLocal), [arrayExpr]);
+//     const eachCall = t.memberExpression(loopCall, t.identifier("each"));
+//     const eachFn = t.arrowFunctionExpression(params, callbackBody);
 
-  // Wrap other non-JSX expressions
-  if (
-    !t.isJSXEmptyExpression(expr) &&
-    !t.isJSXElement(expr) &&
-    !t.isJSXFragment(expr)
-  ) {
-    path.node.expression = wrapExpressionInArrow(expr);
-  }
-}
+//     path.node.expression = t.callExpression(eachCall, [eachFn]);
+//     shouldInjectLoop = true;
+//   }
+// }
 
-function handleJSXAttribute(path: NodePath<t.JSXAttribute>) {
-  const attr = path.node;
+// function handleDirectLoopCall(path: NodePath<t.JSXExpressionContainer>) {
+//   const expr = path.node.expression;
 
-  // Handle ref
-  if (
-    t.isJSXIdentifier(attr.name, { name: "ref" }) &&
-    t.isJSXExpressionContainer(attr.value)
-  ) {
-    const expression = attr.value.expression;
-    if (t.isIdentifier(expression)) {
-      const param = t.identifier("el");
-      const body = t.assignmentExpression("=", expression, param);
-      attr.value.expression = t.arrowFunctionExpression([param], body);
-    }
-  }
+//   if (
+//     t.isCallExpression(expr) &&
+//     t.isIdentifier(expr.callee) &&
+//     veltraImports.has(expr.callee.name)
+//   ) {
+//     const arg = expr.arguments[0];
 
-  // Wrap JSXElement or JSXFragment in attributes
-  if (
-    t.isJSXExpressionContainer(attr.value) &&
-    (t.isJSXElement(attr.value.expression) ||
-      t.isJSXFragment(attr.value.expression))
-  ) {
-    attr.value.expression = t.arrowFunctionExpression(
-      [],
-      attr.value.expression
-    );
-  }
-}
+//     if (!t.isArrowFunctionExpression(arg) && t.isExpression(arg)) {
+//       expr.arguments[0] = t.arrowFunctionExpression([], arg);
+//     }
+//   }
+// }
 
-function handleLoopJSXExpression(path: NodePath<t.JSXExpressionContainer>) {
-  const expr = path.node.expression;
+// function handleLoopCallExpression(path: NodePath<t.CallExpression>) {
+//   const { node } = path;
 
-  if (
-    t.isCallExpression(expr) && // loop().each()
-    t.isMemberExpression(expr.callee) &&
-    t.isCallExpression(expr.callee.object) &&
-    t.isIdentifier(expr.callee.object.callee) &&
-    veltraImports.has(expr.callee.object.callee.name) && // imported loop alias
-    t.isIdentifier(expr.callee.property, { name: "each" })
-  ) {
-    const scopePath = path.findParent((p) => p.isProgram() || p.isFunction());
-    const varName = path.scope.generateUidIdentifier("looped");
+//   // Check if it's loop()
+//   if (t.isIdentifier(node.callee) && veltraImports.has(node.callee.name)) {
+//     const arg = node.arguments[0];
+//     if (!t.isArrowFunctionExpression(arg) && t.isExpression(arg)) {
+//       // WRAP the loop argument with arrow function
+//       node.arguments[0] = t.arrowFunctionExpression([], arg);
+//     }
+//   }
+// }
 
-    // Wrap in memo(() => ...)
-    const memoCall = t.callExpression(t.identifier("memo"), [
-      t.arrowFunctionExpression([], expr),
-    ]);
+// export const babelPlugin = declare((api) => {
+//   api.assertVersion(7);
 
-    const loopedVar = t.variableDeclaration("const", [
-      t.variableDeclarator(varName, memoCall),
-    ]);
-
-    // Hoist to the top of the scope
-    if (scopePath) {
-      if (scopePath.isProgram()) {
-        scopePath.unshiftContainer("body", loopedVar);
-      } else if (
-        scopePath.isFunctionDeclaration() ||
-        scopePath.isFunctionExpression() ||
-        scopePath.isArrowFunctionExpression()
-      ) {
-        const bodyPath = scopePath.get("body");
-
-        if (Array.isArray(bodyPath)) {
-          bodyPath.forEach((p) => {
-            if (p.isBlockStatement()) {
-              p.unshiftContainer("body", loopedVar);
-            }
-          });
-        } else if (bodyPath.isBlockStatement()) {
-          bodyPath.unshiftContainer("body", loopedVar);
-        }
-      }
-    }
-
-    // Replace JSX expression with looped()
-    path.node.expression = t.callExpression(varName, []);
-  }
-}
-
-export const babelPlugin = declare((api) => {
-  api.assertVersion(7);
-
-  return {
-    name: "veltra-plugin-babel",
-    visitor: {
-      Program(path, state) {
-        handleImports(path, state);
-      },
-      JSXExpressionContainer(path) {
-        handleLoopJSXExpression(path);
-        handleJSXExpressionContainer(path);
-      },
-      JSXAttribute(path) {
-        handleJSXAttribute(path);
-      },
-      CallExpression(path) {
-        handleCallExpression(path);
-      },
-    },
-  };
-});
+//   return {
+//     name: "veltra-plugin-babel",
+//     visitor: {
+//       Program: {
+//         enter(path, state) {
+//           handleImports(path, state);
+//         },
+//         exit(path, state) {
+//           injectMissingImports(path, state);
+//         },
+//       },
+//       JSXExpressionContainer(path) {
+//         handleDirectLoopCall(path);
+//         handleLoopJSXExpression(path);
+//         transformArrayMapToLoop(path);
+//         handleJSXExpressionContainer(path);
+//       },
+//       JSXAttribute(path) {
+//         handleJSXAttribute(path);
+//       },
+//       CallExpression(path) {
+//         handleLoopCallExpression(path);
+//         handleCallExpression(path);
+//       },
+//     },
+//   };
+// });

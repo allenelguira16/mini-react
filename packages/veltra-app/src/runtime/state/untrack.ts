@@ -1,9 +1,12 @@
-export let shouldTrack = true;
+import { activeEffect, setActiveEffect } from "./effect";
 
 export function untrack<T>(fn: () => T): T {
-  const prev = shouldTrack;
-  shouldTrack = false; // turn off tracking
-  const result = fn();
-  shouldTrack = prev; // restore tracking
-  return result;
+  const prevEffect = activeEffect;
+  setActiveEffect(null); // disable tracking
+
+  try {
+    return fn();
+  } finally {
+    setActiveEffect(prevEffect); // restore previous tracking context
+  }
 }
