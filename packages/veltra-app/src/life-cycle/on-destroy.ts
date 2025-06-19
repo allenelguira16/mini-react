@@ -1,14 +1,6 @@
+import { destroyContext } from "~/context";
+
 export type DestroyFn = () => void;
-
-let destroyContext: DestroyFn[] | null = null;
-
-export function setDestroyContext(stack: (() => void)[]) {
-  destroyContext = stack;
-}
-
-export function detachDestroyContext() {
-  destroyContext = null;
-}
 
 export function onDestroy(fn: () => void) {
   if (destroyContext) {

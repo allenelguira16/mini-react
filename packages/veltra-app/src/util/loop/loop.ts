@@ -2,7 +2,7 @@ import { getCurrentSuspense } from "~/context";
 import { jsx } from "../../jsx-runtime";
 import { onDestroy, onMount } from "../../life-cycle";
 import { componentRootNodes, suspensePromise } from "../../render";
-import { effect as reactor, State, untrack } from "../../state";
+import { effect as reactor, State, untrack } from "../../reactivity";
 import {
   newEntries,
   removeEntryNodes,

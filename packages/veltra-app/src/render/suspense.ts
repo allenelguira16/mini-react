@@ -1,5 +1,5 @@
 import { getNode, toArray } from "~/util";
-import { effect, state } from "~/state";
+import { effect, state } from "~/reactivity";
 import { patch } from "./patch";
 import { setCurrentSuspense, SuspenseInstance } from "~/context";
 

@@ -1,5 +1,5 @@
 import { runComponentCleanup } from "~/life-cycle";
-import { state, untrack } from "~/state";
+import { state, untrack } from "~/reactivity";
 import { Entry } from "./index";
 import { toArray } from "../to-array";
 

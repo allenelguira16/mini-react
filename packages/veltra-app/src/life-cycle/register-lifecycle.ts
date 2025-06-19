@@ -1,16 +1,13 @@
 import {
-  // Subscriber,
-  detachEffectContext,
-  // detachReactorContext,
-  removeEffect,
-  // removeReactor,
-  // wrapEffect,
-  // wrapReactor,
-} from "../state";
-import { EffectFn } from "../state";
+  setDestroyContext,
+  setEffectContext,
+  setMountContext,
+} from "~/context";
+import { removeEffect } from "../reactivity";
+import { EffectFn } from "../reactivity";
 import { registerComponentCleanup } from "./component-cleanup";
-import { DestroyFn, detachDestroyContext } from "./on-destroy";
-import { MountFn, detachMountContext } from "./on-mount";
+import { DestroyFn } from "./on-destroy";
+import { MountFn } from "./on-mount";
 import { onNodeReattached } from "~/util";
 
 export type LifecycleContext = {
@@ -23,10 +20,9 @@ export type LifecycleContext = {
 export function registerLifeCycles(context: LifecycleContext, $target: Node) {
   const cleanups: (() => void)[] = [];
 
-  detachMountContext();
-  detachEffectContext();
-  // detachReactorContext();
-  detachDestroyContext();
+  setMountContext(null);
+  setEffectContext(null);
+  setDestroyContext(null);
 
   registerComponentCleanup($target, cleanups);
 

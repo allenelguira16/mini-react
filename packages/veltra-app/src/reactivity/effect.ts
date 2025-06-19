@@ -1,21 +1,13 @@
+import { effectContext } from "~/context";
+
 // Effect function type with dependency tracking
 export type EffectFn = (() => void) & { deps?: Set<EffectFn>[] };
 
 // Currently active effect (global context for dependency collection)
 export let activeEffect: EffectFn | null = null;
 
-let effectContext: EffectFn[] | null = null;
-
 export function setActiveEffect(newActiveEffect: EffectFn | null) {
   activeEffect = newActiveEffect;
-}
-
-export function setEffectContext(newEffectContext: EffectFn[] | null) {
-  effectContext = newEffectContext;
-}
-
-export function detachEffectContext() {
-  effectContext = null;
 }
 
 export function effect(fn: () => void): () => void {

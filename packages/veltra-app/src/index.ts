@@ -13,6 +13,12 @@
 // } from "./runtime";
 // export {  } from "./life-cycle";
 export { type MountFn, type DestroyFn, onMount, onDestroy } from "./life-cycle";
-export { type State, type Computed, state, computed, effect } from "./state";
+export {
+  type State,
+  type Computed,
+  state,
+  computed,
+  effect,
+} from "./reactivity";
 export { Suspense, createRoot } from "./render";
 export { loop, memo, logJsx, resource } from "./util";

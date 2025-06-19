@@ -1,4 +1,4 @@
-import { effect as reactor } from "../state";
+import { effect as reactor } from "../reactivity";
 import { patch } from "./patch";
 import { getNode, toArray } from "~/util";
 

@@ -1,4 +1,4 @@
-import { effect, state } from "~/state";
+import { effect, state } from "~/reactivity";
 
 export function resource<T, A>(fetcher: (...args: A[]) => Promise<T>) {
   const loading = state(true);
