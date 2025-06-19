@@ -9,20 +9,22 @@ export function h(
   props: Record<string, any>,
   children: JSX.Element[]
 ) {
-  if (type === Fragment) {
-    return children;
-  }
+  try {
+    if (type === Fragment) {
+      return children;
+    }
 
-  if (typeof type === "function") {
-    return mountComponent(type, props, children);
-  }
+    if (typeof type === "function") {
+      return mountComponent(type, props, children);
+    }
 
-  const $element = createElement(type, props.xmlns);
+    const $element = createElement(type, props.xmlns);
 
-  applyProps($element, props);
-  renderChildren($element, children);
+    applyProps($element, props);
+    renderChildren($element, children);
 
-  return $element;
+    return $element;
+  } catch (error) {}
 }
 
 function createElement(tag: string, namespace?: string) {

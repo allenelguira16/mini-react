@@ -1,6 +1,7 @@
 import { effect, state } from "@veltra/app";
 
 import { name } from "../globalState";
+import { sleep } from "src/sleep";
 
 type PokeDexData = {
   count: number;
@@ -31,13 +32,12 @@ export const PokeDex = () => {
     const response = await fetch(url);
     const json = (await response.json()) as PokeDexData;
 
-    //   console.log(json);
-    setTimeout(() => {
-      pokeDexList.value = json.results;
-      prevLink.value = json.previous?.replace(/limit=\d+/, "limit=20") ?? "";
-      nextLink.value = json.next?.replace(/limit=\d+/, "limit=20") ?? "";
-      isLoading.value = false;
-    }, 500);
+    await sleep(500);
+
+    pokeDexList.value = json.results;
+    prevLink.value = json.previous?.replace(/limit=\d+/, "limit=20") ?? "";
+    nextLink.value = json.next?.replace(/limit=\d+/, "limit=20") ?? "";
+    isLoading.value = false;
   };
 
   effect(async () => {
@@ -48,10 +48,6 @@ export const PokeDex = () => {
     )();
   });
 
-  // effect(() => {
-  //   console.log(pokeDexList.value);
-  // });
-
   const handleSort = (key: SortKey, dir: SortDirection) => () => {
     currentDirection.value = dir === "asc" ? "desc" : "asc";
     pokeDexList.value = [...pokeDexList.value].sort((a, b) => {
@@ -60,8 +56,12 @@ export const PokeDex = () => {
     });
   };
 
+  effect(() => {
+    console.log(pokeDexList.value);
+  });
+
   return (
-    <div>
+    <>
       <div class="break-all">Hi {name.value.firstName}</div>
       <table class="w-full mx-auto my-2 table-fixed">
         <thead>
@@ -109,83 +109,6 @@ export const PokeDex = () => {
                 </tr>
               ))}
           </>
-          {/* {isLoading.value &&
-            Array.from({ length: 20 })
-              .map((_, i) => i + 1)
-              .map((number) => (
-                <tr>
-                  <td colspan="3" class="h-[24px] text-center">
-                    {number === 10 && "loading..."}
-                  </td>
-                </tr>
-              ))}
-          {!isLoading.value &&
-            pokeDexList.value.map(({ name, url }, index) => (
-              <tr>
-                <td class="w-1/3 text-center">{index + 1}</td>
-                <td class="w-1/3 text-center truncate">{name}</td>
-                <td
-                  class="w-1/3 text-center truncate"
-                  onClick={() => alert(url)}
-                >
-                  {url}
-                </td>
-              </tr>
-            ))} */}
-          {/* {isLoading.value && (
-            <For items={Array.from({ length: 20 }).map((_, i) => i + 1)}>
-              {(number) => (
-                <tr>
-                  <td colspan="3" class="h-[24px] text-center">
-                    {number === 10 && "loading..."}
-                  </td>
-                </tr>
-              )}
-            </For>
-          )}
-          {!isLoading.value && (
-            <For items={pokeDexList.value}>
-              {({ name, url }, index) => (
-                <tr>
-                  <td class="w-1/3 text-center">{index.value + 1}</td>
-                  <td class="w-1/3 text-center truncate">{name}</td>
-                  <td
-                    class="w-1/3 text-center truncate"
-                    onClick={() => alert(url)}
-                  >
-                    {url}
-                  </td>
-                </tr>
-              )}
-            </For>
-          )} */}
-          {/* <For
-            items={pokeDexList.value}
-            fallback={
-              <For items={Array.from({ length: 20 }).map((_, i) => i + 1)}>
-                {(number) => (
-                  <tr>
-                    <td colspan="3" class="h-[24px] text-center">
-                      {number === 10 && "loading..."}
-                    </td>
-                  </tr>
-                )}
-              </For>
-            }
-          >
-            {({ name, url }, index) => (
-              <tr>
-                <td class="w-1/3 text-center">{index.value + 1}</td>
-                <td class="w-1/3 text-center truncate">{name}</td>
-                <td
-                  class="w-1/3 text-center truncate"
-                  onClick={() => alert(url)}
-                >
-                  {url}
-                </td>
-              </tr>
-            )}
-          </For> */}
         </tbody>
       </table>
       <div class="flex gap-4 justify-center">
@@ -204,6 +127,6 @@ export const PokeDex = () => {
           Next
         </button>
       </div>
-    </div>
+    </>
   );
 };

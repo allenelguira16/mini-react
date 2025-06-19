@@ -115,11 +115,11 @@ const DropdownList = ({ numbers }: { numbers: State<number[]> }) => {
   console.log("only log once");
 
   return (
-    <>
+    <div class="flex gap-2 flex-col lg:flex-row">
       {numbers.value.map((number) => (
         <Dropdown number={number} />
       ))}
-    </>
+    </div>
   );
 };
 

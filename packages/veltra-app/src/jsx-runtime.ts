@@ -1,5 +1,5 @@
 import { IS_SSR } from "./const";
-import { h, hSSR } from "./runtime";
+import { h, hSSR } from "./render";
 import { toArray } from "./util";
 
 import "./jsx.d";

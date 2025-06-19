@@ -12,7 +12,7 @@ export function mountComponent(
   props: Record<string, any>,
   children: JSX.Element[]
 ) {
-  resolveComponentProps(props);
+  resolveComponentProps(type, props);
 
   const lifecycleContext: LifecycleContext = {
     mount: [],

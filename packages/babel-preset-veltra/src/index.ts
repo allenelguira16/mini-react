@@ -4,6 +4,7 @@ import babelReactPlugin from "@babel/preset-react";
 import {
   logJsxPlugin,
   loopMapPlugin,
+  suspenseWrapPlugin,
   wrapJSXExpressionsPlugin,
 } from "./plugins";
 
@@ -21,6 +22,11 @@ export default function babelPresetVeltra(api: ConfigAPI): TransformOptions {
         },
       ],
     ],
-    plugins: [loopMapPlugin, logJsxPlugin, wrapJSXExpressionsPlugin],
+    plugins: [
+      logJsxPlugin,
+      loopMapPlugin,
+      suspenseWrapPlugin,
+      wrapJSXExpressionsPlugin,
+    ],
   };
 }

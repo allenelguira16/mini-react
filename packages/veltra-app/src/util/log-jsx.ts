@@ -1,4 +1,4 @@
-import { componentRootNodes } from "~/runtime";
+import { componentRootNodes } from "../render";
 
 export function logJsx($nodes: Node[]) {
   const $newNodes = [

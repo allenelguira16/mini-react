@@ -42,7 +42,7 @@ export function registerLifeCycles(context: LifecycleContext, $target: Node) {
 
   // Re-run effect and memo when node is reattached
   onNodeReattached(() => {
-    // context.effect.forEach((effect) => wrapEffect(effect));
+    // context.effect.forEach((effect) => wrappedEffect(effect));
     // context.reactor.forEach((effect) => wrapReactor(effect));
 
     cleanups.push(...context.mount.map((fn) => fn()).filter((c) => !!c));
