@@ -18,6 +18,16 @@ type Computed<T> = {
 };
 declare function computed<T>(getter: () => T): Computed<T>;
 
+declare function untrack<T>(fn: () => T): T;
+
+declare function resource<T, A>(fetcher: (...args: A[]) => Promise<T>): {
+    readonly value: T;
+    loading: State<boolean>;
+    error: State<any>;
+    refetch: () => Promise<void>;
+    mutate: T;
+};
+
 declare function Suspense(props: {
     fallback: JSX.Element;
     children: JSX.Element;
@@ -33,13 +43,5 @@ declare function memo<T>(fn: () => T): () => T;
 
 declare function logJsx($nodes: Node[]): Node | Node[];
 
-declare function resource<T, A>(fetcher: (...args: A[]) => Promise<T>): {
-    readonly value: T;
-    loading: State<boolean>;
-    error: State<any>;
-    refetch: () => Promise<void>;
-    mutate: T;
-};
-
-export { Suspense, computed, createRoot, effect, logJsx, loop, memo, onDestroy, onMount, resource, state };
+export { Suspense, computed, createRoot, effect, logJsx, loop, memo, onDestroy, onMount, resource, state, untrack };
 export type { Computed, DestroyFn, MountFn, State };

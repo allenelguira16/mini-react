@@ -41,7 +41,7 @@ function handleChildrenSSR(children: JSX.Element[]) {
 
   for (const child of children) {
     if (typeof child === "function") {
-      transformedChildren.push(child());
+      transformedChildren.push(String(child()));
     } else if (Array.isArray(child)) {
       // RECURSIVELY flatten nested arrays
       child.forEach((nested) =>
