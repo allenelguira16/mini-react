@@ -41,8 +41,6 @@ export const PokeDex = () => {
   };
 
   effect(async () => {
-    // console.log("run");
-    // await fetchPokeDexData("https://pokeapi.co/api/v2/pokemon/")();
     await fetchPokeDexData(
       "https://pokeapi.co/api/v2/pokemon/?offset=1100&limit=20"
     )();
@@ -55,10 +53,6 @@ export const PokeDex = () => {
       return currentDirection.value === "asc" ? cmp : -cmp;
     });
   };
-
-  effect(() => {
-    console.log(pokeDexList.value);
-  });
 
   return (
     <>

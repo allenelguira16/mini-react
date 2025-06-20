@@ -8,15 +8,29 @@ export type Route = {
   lazy?: () => Promise<{ default: () => JSX.Element }>;
 };
 
-const location = state(window.location.pathname);
+export type Location = {
+  pathname: string;
+  search: string;
+};
+
+export const location = state<Location>({
+  pathname: window.location.pathname,
+  search: window.location.search,
+});
 
 window.addEventListener("popstate", () => {
-  location.value = window.location.pathname;
+  location.value = {
+    ...location.value,
+    pathname: window.location.pathname,
+  };
 });
 
 export function navigate(path: string) {
   history.pushState(null, "", path);
-  location.value = path;
+  location.value = {
+    ...location.value,
+    pathname: path,
+  };
 }
 
 function matchRoute(path: string, routes: Route[]): Route | undefined {
@@ -31,10 +45,10 @@ function matchRoute(path: string, routes: Route[]): Route | undefined {
 }
 
 export function Router(props: { routes: Route[] }) {
-  const current = state<JSX.Element | null>(null);
+  const current = state<() => JSX.Element>(() => <></>);
 
   effect(() => {
-    const matched = matchRoute(location.value, props.routes);
+    const matched = matchRoute(location.value.pathname, props.routes);
     if (matched) {
       if (matched.guard && !matched.guard()) {
         current.value = () => <div>Access Denied</div>;
@@ -53,7 +67,6 @@ export function Router(props: { routes: Route[] }) {
   });
 
   return () => {
-    const Comp = current.value;
-    return Comp ? <Comp /> : null;
+    return <>{current.value()}</>;
   };
 }

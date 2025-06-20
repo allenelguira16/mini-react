@@ -18,18 +18,7 @@ export function state<T>(initialValue?: T): State<T | undefined> {
       const oldValue = target[key as keyof typeof target];
       const result = Reflect.set(target, key, newValue, receiver);
 
-      const isArray = Array.isArray(newValue);
-      const isObject =
-        typeof newValue === "object" &&
-        !Array.isArray(newValue) &&
-        newValue !== null;
-      const isPrimitive =
-        typeof newValue !== "object" && typeof newValue !== "function";
-
-      const shouldTrigger =
-        isArray || isObject || (isPrimitive && oldValue !== newValue);
-
-      if (shouldTrigger) {
+      if (oldValue !== newValue) {
         trigger(target, key);
       }
 

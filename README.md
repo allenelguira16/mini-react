@@ -388,6 +388,59 @@ const Dropdown = ({ number }: { number: number }) => {
 createRoot(document.getElementById("app")!, <App />);
 ```
 
+### Resource
+
+A way to fetch data dynamically
+
+```tsx
+import { resource, createRoot } from "@veltra/app";
+
+function Counter() {
+  const msg = resource(async () => {
+    await new Promise((resolve) => {
+      setTimeout(resolve, 1000); // delay for 1 second
+    });
+    return "hello world";
+  });
+
+  return (
+    <div>
+      <div>Msg: {msg.value}</div>
+    </div>
+  );
+}
+
+createRoot(document.getElementById("app")!, <App />);
+```
+
+### Suspense
+
+A way to fetch data dynamically
+
+```tsx
+import { Suspense, createRoot } from "@veltra/app";
+
+function Counter() {
+  const msg = resource(async () => {
+    await new Promise((resolve) => {
+      setTimeout(resolve, 1000); // delay for 1 second
+    });
+    return "hello world";
+  });
+
+  return (
+    <div>
+      <div>
+        Msg:
+        <Suspense fallback={<>loading message...</>}>{msg.value}</Suspense>
+      </div>
+    </div>
+  );
+}
+
+createRoot(document.getElementById("app")!, <App />);
+```
+
 ## Future features to be added
 
 - Proper DOM Types

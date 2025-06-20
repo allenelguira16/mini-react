@@ -1396,6 +1396,27 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@veltra/router@workspace:^, @veltra/router@workspace:packages/veltra-router":
+  version: 0.0.0-use.local
+  resolution: "@veltra/router@workspace:packages/veltra-router"
+  dependencies:
+    "@babel/preset-typescript": "npm:^7.27.1"
+    "@rollup/plugin-node-resolve": "npm:^16.0.1"
+    "@types/rollup-plugin-delete": "npm:^1.0.0"
+    "@veltra/app": "workspace:^"
+    esbuild: "npm:^0.25.5"
+    rimraf: "npm:^6.0.1"
+    rollup: "npm:^4.41.1"
+    rollup-plugin-delete: "npm:^3.0.1"
+    rollup-plugin-dts: "npm:^6.2.1"
+    rollup-plugin-esbuild: "npm:^6.2.1"
+    rollup-plugin-tsconfig-paths: "npm:^1.5.2"
+    rollup-plugin-typescript2: "npm:^0.36.0"
+    tslib: "npm:^2.8.1"
+    typescript: "npm:^5.8.3"
+  languageName: unknown
+  linkType: soft
+
 "abbrev@npm:^2.0.0":
   version: 2.0.0
   resolution: "abbrev@npm:2.0.0"
@@ -4228,6 +4249,7 @@ __metadata:
     "@types/lodash": "npm:^4.17.17"
     "@types/node": "npm:^22.15.21"
     "@veltra/app": "workspace:^"
+    "@veltra/router": "workspace:^"
     lodash: "npm:^4.17.21"
     tailwindcss: "npm:^4.1.8"
     typescript: "npm:~5.6.2"

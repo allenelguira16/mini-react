@@ -4,6 +4,7 @@ const workspaces = [
   "@babel/preset-veltra",
   "vite-plugin-veltra",
   "@veltra/app",
+  "@veltra/router",
 ];
 
 for (const workspace of workspaces) {

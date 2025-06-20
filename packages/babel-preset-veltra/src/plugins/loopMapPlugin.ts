@@ -11,6 +11,8 @@ export const loopMapPlugin = declare((api) => {
 
         // Skip transforming files from Veltra's own source or installed package
         if (
+          filename.includes("/veltra-router/") ||
+          filename.includes("\\veltra-router\\") || // local dev
           filename.includes("/veltra-app/") ||
           filename.includes("\\veltra-app\\") || // local dev
           filename.includes("/node_modules/@veltra/app/") ||

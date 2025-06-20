@@ -1,7 +1,6 @@
 import {
   computed,
   effect,
-  memo,
   onDestroy,
   onMount,
   State,
@@ -124,7 +123,6 @@ const DropdownList = ({ numbers }: { numbers: State<number[]> }) => {
 };
 
 const Dropdown = ({ number }: { number: number }) => {
-  let divElement!: HTMLElement;
   const isOpen = state(false);
 
   const handleToggle = () => {
@@ -134,7 +132,7 @@ const Dropdown = ({ number }: { number: number }) => {
   const value = Array.from({ length: 3 }).map((_, i) => i + 1);
 
   return (
-    <div ref={divElement} class="relative lg:w-[calc(100%/8)]">
+    <div class="relative lg:w-[calc(100%/8)]">
       <div>
         <button class="btn w-full" onClick={handleToggle}>
           Open Dropdown {number}

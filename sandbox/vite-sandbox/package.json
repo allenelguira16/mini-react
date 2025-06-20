@@ -21,6 +21,7 @@
     "@babel/preset-veltra": "workspace:^",
     "@tailwindcss/vite": "^4.1.8",
     "@veltra/app": "workspace:^",
+    "@veltra/router": "workspace:^",
     "lodash": "^4.17.21",
     "tailwindcss": "^4.1.8",
     "vite-bundle-visualizer": "^1.2.1",

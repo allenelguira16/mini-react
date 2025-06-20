@@ -23,6 +23,10 @@ const RAW_RUNTIME_STATE =
       "reference": "workspace:packages/veltra-app"\
     },\
     {\
+      "name": "@veltra/router",\
+      "reference": "workspace:packages/veltra-router"\
+    },\
+    {\
       "name": "vite-plugin-veltra",\
       "reference": "workspace:packages/vite-plugin-veltra"\
     },\
@@ -41,6 +45,7 @@ const RAW_RUNTIME_STATE =
   "fallbackExclusionList": [\
     ["@babel/preset-veltra", ["workspace:packages/babel-preset-veltra"]],\
     ["@veltra/app", ["workspace:packages/veltra-app"]],\
+    ["@veltra/router", ["workspace:packages/veltra-router"]],\
     ["root-workspace-0b6124", ["workspace:."]],\
     ["sandbox-ssr", ["workspace:sandbox/vite-sandbox-ssr"]],\
     ["vite-plugin-veltra", ["workspace:packages/vite-plugin-veltra"]],\
@@ -1981,6 +1986,29 @@ const RAW_RUNTIME_STATE =
           ["@rollup/plugin-node-resolve", "virtual:fc47745ed59b18ff8b7d6e8e2123c9ae37b9678fe552b73b1026ffc19e6bd622c9fadcc24f6b708130c80c66002cfcf0771ee2fece9fd175ed50cde9c47ced1d#npm:16.0.1"],\
           ["@types/rollup-plugin-delete", "npm:1.0.0"],\
           ["@veltra/app", "workspace:packages/veltra-app"],\
+          ["esbuild", "npm:0.25.5"],\
+          ["rimraf", "npm:6.0.1"],\
+          ["rollup", "npm:4.42.0"],\
+          ["rollup-plugin-delete", "virtual:fc47745ed59b18ff8b7d6e8e2123c9ae37b9678fe552b73b1026ffc19e6bd622c9fadcc24f6b708130c80c66002cfcf0771ee2fece9fd175ed50cde9c47ced1d#npm:3.0.1"],\
+          ["rollup-plugin-dts", "virtual:fc47745ed59b18ff8b7d6e8e2123c9ae37b9678fe552b73b1026ffc19e6bd622c9fadcc24f6b708130c80c66002cfcf0771ee2fece9fd175ed50cde9c47ced1d#npm:6.2.1"],\
+          ["rollup-plugin-esbuild", "virtual:fc47745ed59b18ff8b7d6e8e2123c9ae37b9678fe552b73b1026ffc19e6bd622c9fadcc24f6b708130c80c66002cfcf0771ee2fece9fd175ed50cde9c47ced1d#npm:6.2.1"],\
+          ["rollup-plugin-tsconfig-paths", "virtual:7c9c89e8e7cbe1ce006117037336c6c2efb9ce63fd92e3e9beaf6ccd1cd2ca6f1a412934a5b81364e41a2b178e17fee11de605fb962c545e01706ce38fb6e600#npm:1.5.2"],\
+          ["rollup-plugin-typescript2", "virtual:7c9c89e8e7cbe1ce006117037336c6c2efb9ce63fd92e3e9beaf6ccd1cd2ca6f1a412934a5b81364e41a2b178e17fee11de605fb962c545e01706ce38fb6e600#npm:0.36.0"],\
+          ["tslib", "npm:2.8.1"],\
+          ["typescript", "patch:typescript@npm%3A5.8.3#optional!builtin<compat/typescript>::version=5.8.3&hash=5786d5"]\
+        ],\
+        "linkType": "SOFT"\
+      }]\
+    ]],\
+    ["@veltra/router", [\
+      ["workspace:packages/veltra-router", {\
+        "packageLocation": "./packages/veltra-router/",\
+        "packageDependencies": [\
+          ["@babel/preset-typescript", "virtual:7c9c89e8e7cbe1ce006117037336c6c2efb9ce63fd92e3e9beaf6ccd1cd2ca6f1a412934a5b81364e41a2b178e17fee11de605fb962c545e01706ce38fb6e600#npm:7.27.1"],\
+          ["@rollup/plugin-node-resolve", "virtual:fc47745ed59b18ff8b7d6e8e2123c9ae37b9678fe552b73b1026ffc19e6bd622c9fadcc24f6b708130c80c66002cfcf0771ee2fece9fd175ed50cde9c47ced1d#npm:16.0.1"],\
+          ["@types/rollup-plugin-delete", "npm:1.0.0"],\
+          ["@veltra/app", "workspace:packages/veltra-app"],\
+          ["@veltra/router", "workspace:packages/veltra-router"],\
           ["esbuild", "npm:0.25.5"],\
           ["rimraf", "npm:6.0.1"],\
           ["rollup", "npm:4.42.0"],\
@@ -5326,6 +5354,7 @@ const RAW_RUNTIME_STATE =
           ["@types/lodash", "npm:4.17.17"],\
           ["@types/node", "npm:22.15.31"],\
           ["@veltra/app", "workspace:packages/veltra-app"],\
+          ["@veltra/router", "workspace:packages/veltra-router"],\
           ["lodash", "npm:4.17.21"],\
           ["tailwindcss", "npm:4.1.8"],\
           ["typescript", "patch:typescript@npm%3A5.6.3#optional!builtin<compat/typescript>::version=5.6.3&hash=8c6c40"],\

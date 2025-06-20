@@ -29,16 +29,9 @@ export const PokeDexSuspense = () => {
   });
 
   const currentDirection = state<SortDirection>("asc");
-  const sortKey = state<SortKey>("name");
 
   const handleSort = (key: SortKey) => () => {
-    if (sortKey.value === key) {
-      currentDirection.value =
-        currentDirection.value === "asc" ? "desc" : "asc";
-    } else {
-      sortKey.value = key;
-      currentDirection.value = "asc";
-    }
+    currentDirection.value = currentDirection.value === "asc" ? "desc" : "asc";
 
     pokeDexList.mutate = {
       ...pokeDexList.value,
