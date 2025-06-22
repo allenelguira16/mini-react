@@ -1,5 +1,5 @@
 import { IS_SSR } from "./const";
-import { h, hSSR } from "./render";
+import { Fragment, h, hSSR } from "./render";
 import { toArray } from "./util";
 
 import "./jsx.d";
@@ -12,16 +12,12 @@ import "./jsx.d";
  * @param children - The children of the element.
  * @returns The JSX element.
  */
-const jsx = (type: any, { children = [], ...props }: any) => {
+const jsx = (type: string | Function, { children = [], ...props }: Record<string, any>) => {
   if (IS_SSR) {
     return hSSR(type, props, toArray(children));
   }
 
   return h(type, props, toArray(children));
 };
-
-function Fragment({ children }: { children: any[] }) {
-  return children;
-}
 
 export { jsx, jsx as jsxs, Fragment };

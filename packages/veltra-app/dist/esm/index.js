@@ -1,5 +1,5 @@
-import { m as mountContext, d as destroyContext, t as trigger, a as track, s as state, e as effect, r as runComponentCleanup, b as toArray, u as untrack, j as jsx, c as suspensePromise, f as componentRootNodes, g as renderChildren } from './chunks/register-lifecycle-DePyjZun.js';
-export { S as Suspense } from './chunks/register-lifecycle-DePyjZun.js';
+import { m as mountContext, d as destroyContext, t as trigger, a as track, s as state, e as effect, r as runComponentCleanup, b as toArray, u as untrack, j as jsx, c as suspensePromise, f as componentRootNodes, g as renderChildren } from './chunks/register-lifecycle-Dfxpgqno.js';
+export { F as Fragment, S as Suspense } from './chunks/register-lifecycle-Dfxpgqno.js';
 
 function onMount(fn) {
   if (mountContext) {
@@ -155,9 +155,7 @@ function reorderEntries($rootNode, $parent, entries, items) {
     const item = items[i];
     placeCounts.set(item, (placeCounts.get(item) || 0) + 1);
     let count = 0;
-    const entry = entries.find(
-      (e) => e.item === item && ++count === placeCounts.get(item)
-    );
+    const entry = entries.find((e) => e.item === item && ++count === placeCounts.get(item));
     if (!entry) continue;
     untrack(() => entry.index.value = i);
     insertNodes($parent, entry.nodes, ref);
@@ -204,47 +202,50 @@ function newEntries(items, entries, children, idCounter) {
 function loop(items) {
   return {
     each: (children) => {
-      return jsx((props) => {
-        const {
-          items: each,
-          children: [children2]
-        } = props;
-        const $rootNode = document.createTextNode("");
-        let entries = [];
-        let idCounter = 0;
-        function reconcile($parent, items2) {
-          entries = removeOldNodes($parent, items2, entries);
-          entries.push(...newEntries(items2, entries, children2, idCounter));
-          reorderEntries($rootNode, $parent, entries, items2);
-        }
-        onMount(() => {
-          effect(() => {
-            const $parent = $rootNode.parentNode;
-            if (!$parent) return;
-            try {
-              const list = each();
-              if (!list) return;
-              reconcile($parent, [...list]);
-            } catch (errorOrPromise) {
-              if (errorOrPromise instanceof Promise) {
-                suspensePromise.value = errorOrPromise;
-              } else {
-                throw errorOrPromise;
+      return jsx(
+        (props) => {
+          const {
+            items: each,
+            children: [children2]
+          } = props;
+          const $rootNode = document.createTextNode("");
+          let entries = [];
+          let idCounter = 0;
+          function reconcile($parent, items2) {
+            entries = removeOldNodes($parent, items2, entries);
+            entries.push(...newEntries(items2, entries, children2, idCounter));
+            reorderEntries($rootNode, $parent, entries, items2);
+          }
+          onMount(() => {
+            effect(() => {
+              const $parent = $rootNode.parentNode;
+              if (!$parent) return;
+              try {
+                const list = each();
+                if (!list) return;
+                reconcile($parent, [...list]);
+              } catch (errorOrPromise) {
+                if (errorOrPromise instanceof Promise) {
+                  suspensePromise.value = errorOrPromise;
+                } else {
+                  throw errorOrPromise;
+                }
               }
+            });
+          });
+          onDestroy(() => {
+            for (const entry of entries) {
+              removeEntryNodes($rootNode.parentNode, entry);
             }
           });
-        });
-        onDestroy(() => {
-          for (const entry of entries) {
-            removeEntryNodes($rootNode.parentNode, entry);
-          }
-        });
-        componentRootNodes.add($rootNode);
-        return $rootNode;
-      }, {
-        items: () => items,
-        children
-      });
+          componentRootNodes.add($rootNode);
+          return $rootNode;
+        },
+        {
+          items: () => items,
+          children
+        }
+      );
     }
   };
 }
@@ -255,9 +256,7 @@ function createRoot($root, App) {
 
 function logJsx($nodes) {
   const $newNodes = [
-    ...$nodes.filter(
-      ($node) => !($node instanceof Text && componentRootNodes.has($node))
-    )
+    ...$nodes.filter(($node) => !($node instanceof Text && componentRootNodes.has($node)))
   ];
   return $newNodes.length === 1 ? $newNodes[0] : $newNodes;
 }

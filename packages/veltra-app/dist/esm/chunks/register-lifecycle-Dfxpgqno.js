@@ -1,13 +1,11 @@
-'use strict';
-
-exports.destroyContext = null;
+let destroyContext = null;
 function setDestroyContext(stack) {
-  exports.destroyContext = stack;
+  destroyContext = stack;
 }
 
-exports.mountContext = null;
+let mountContext = null;
 function setMountContext(stack) {
-  exports.mountContext = stack;
+  mountContext = stack;
 }
 
 let effectContext = null;
@@ -473,7 +471,6 @@ function mountComponent(type, props, children) {
   const lifecycleContext = {
     mount: [],
     effect: [],
-    // reactor: [],
     destroy: []
   };
   initializeLifecycleContext(lifecycleContext);
@@ -494,9 +491,6 @@ const jsx = (type, { children = [], ...props }) => {
   }
   return h(type, props, toArray(children));
 };
-function Fragment({ children }) {
-  return children;
-}
 
 function h(type, props, children) {
   if (type === Fragment) {
@@ -556,6 +550,10 @@ function handleChildrenSSR(children) {
   return transformedChildren.join("");
 }
 
+function Fragment({ children }) {
+  return children;
+}
+
 const isNil = (value) => {
   return value === void 0 || value === null || value === false;
 };
@@ -611,7 +609,6 @@ function registerLifeCycles(context, $target) {
       ...context.destroy,
       ...context.mount.map((fn) => fn()).filter((c) => !!c),
       ...context.effect.map((fn) => () => removeEffect(fn))
-      // ...context.reactor.map((fn) => () => removeReactor(fn))
     );
   });
   onNodeReattached(() => {
@@ -619,17 +616,5 @@ function registerLifeCycles(context, $target) {
   }, $target);
 }
 
-exports.Fragment = Fragment;
-exports.Suspense = Suspense;
-exports.componentRootNodes = componentRootNodes;
-exports.effect = effect;
-exports.jsx = jsx;
-exports.renderChildren = renderChildren;
-exports.runComponentCleanup = runComponentCleanup;
-exports.state = state;
-exports.suspensePromise = suspensePromise;
-exports.toArray = toArray;
-exports.track = track;
-exports.trigger = trigger;
-exports.untrack = untrack;
-//# sourceMappingURL=register-lifecycle-CEfyV6MR.js.map
+export { Fragment as F, Suspense as S, track as a, toArray as b, suspensePromise as c, destroyContext as d, effect as e, componentRootNodes as f, renderChildren as g, jsx as j, mountContext as m, runComponentCleanup as r, state as s, trigger as t, untrack as u };
+//# sourceMappingURL=register-lifecycle-Dfxpgqno.js.map

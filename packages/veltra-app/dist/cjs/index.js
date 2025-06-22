@@ -1,6 +1,6 @@
 'use strict';
 
-var jsxRuntime = require('./chunks/register-lifecycle-CEfyV6MR.js');
+var jsxRuntime = require('./chunks/register-lifecycle-8cNbrrMx.js');
 
 function onMount(fn) {
   if (jsxRuntime.mountContext) {
@@ -156,9 +156,7 @@ function reorderEntries($rootNode, $parent, entries, items) {
     const item = items[i];
     placeCounts.set(item, (placeCounts.get(item) || 0) + 1);
     let count = 0;
-    const entry = entries.find(
-      (e) => e.item === item && ++count === placeCounts.get(item)
-    );
+    const entry = entries.find((e) => e.item === item && ++count === placeCounts.get(item));
     if (!entry) continue;
     jsxRuntime.untrack(() => entry.index.value = i);
     insertNodes($parent, entry.nodes, ref);
@@ -205,47 +203,50 @@ function newEntries(items, entries, children, idCounter) {
 function loop(items) {
   return {
     each: (children) => {
-      return jsxRuntime.jsx((props) => {
-        const {
-          items: each,
-          children: [children2]
-        } = props;
-        const $rootNode = document.createTextNode("");
-        let entries = [];
-        let idCounter = 0;
-        function reconcile($parent, items2) {
-          entries = removeOldNodes($parent, items2, entries);
-          entries.push(...newEntries(items2, entries, children2, idCounter));
-          reorderEntries($rootNode, $parent, entries, items2);
-        }
-        onMount(() => {
-          jsxRuntime.effect(() => {
-            const $parent = $rootNode.parentNode;
-            if (!$parent) return;
-            try {
-              const list = each();
-              if (!list) return;
-              reconcile($parent, [...list]);
-            } catch (errorOrPromise) {
-              if (errorOrPromise instanceof Promise) {
-                jsxRuntime.suspensePromise.value = errorOrPromise;
-              } else {
-                throw errorOrPromise;
+      return jsxRuntime.jsx(
+        (props) => {
+          const {
+            items: each,
+            children: [children2]
+          } = props;
+          const $rootNode = document.createTextNode("");
+          let entries = [];
+          let idCounter = 0;
+          function reconcile($parent, items2) {
+            entries = removeOldNodes($parent, items2, entries);
+            entries.push(...newEntries(items2, entries, children2, idCounter));
+            reorderEntries($rootNode, $parent, entries, items2);
+          }
+          onMount(() => {
+            jsxRuntime.effect(() => {
+              const $parent = $rootNode.parentNode;
+              if (!$parent) return;
+              try {
+                const list = each();
+                if (!list) return;
+                reconcile($parent, [...list]);
+              } catch (errorOrPromise) {
+                if (errorOrPromise instanceof Promise) {
+                  jsxRuntime.suspensePromise.value = errorOrPromise;
+                } else {
+                  throw errorOrPromise;
+                }
               }
+            });
+          });
+          onDestroy(() => {
+            for (const entry of entries) {
+              removeEntryNodes($rootNode.parentNode, entry);
             }
           });
-        });
-        onDestroy(() => {
-          for (const entry of entries) {
-            removeEntryNodes($rootNode.parentNode, entry);
-          }
-        });
-        jsxRuntime.componentRootNodes.add($rootNode);
-        return $rootNode;
-      }, {
-        items: () => items,
-        children
-      });
+          jsxRuntime.componentRootNodes.add($rootNode);
+          return $rootNode;
+        },
+        {
+          items: () => items,
+          children
+        }
+      );
     }
   };
 }
@@ -256,13 +257,12 @@ function createRoot($root, App) {
 
 function logJsx($nodes) {
   const $newNodes = [
-    ...$nodes.filter(
-      ($node) => !($node instanceof Text && jsxRuntime.componentRootNodes.has($node))
-    )
+    ...$nodes.filter(($node) => !($node instanceof Text && jsxRuntime.componentRootNodes.has($node)))
   ];
   return $newNodes.length === 1 ? $newNodes[0] : $newNodes;
 }
 
+exports.Fragment = jsxRuntime.Fragment;
 exports.Suspense = jsxRuntime.Suspense;
 exports.effect = jsxRuntime.effect;
 exports.state = jsxRuntime.state;

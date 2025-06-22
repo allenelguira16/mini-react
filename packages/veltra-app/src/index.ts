@@ -9,5 +9,5 @@ export {
   resource,
   computed,
 } from "./reactivity";
-export { Suspense, createRoot, loop } from "./render";
+export { Suspense, createRoot, loop, Fragment } from "./render";
 export { unwrap, memo, logJsx } from "./util";

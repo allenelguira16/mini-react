@@ -1,3 +1,5 @@
+export { F as Fragment } from './fragment-DsTMuH_N.js';
+
 type MountFn = () => void | (() => void);
 declare function onMount(fn: () => () => void): void;
 declare function onMount(fn: () => void): void;
@@ -31,21 +33,57 @@ declare function resource<T>(fetcher: () => Promise<T>): {
     mutate(newValue: T): void;
 };
 
+/**
+ * create a loop component
+ *
+ * @param items - The items to loop through.
+ * @returns The loop component.
+ */
 declare function loop<T>(items: T[]): {
     each: (children: (item: T, index: State<number>) => JSX.Element) => any;
 };
 
+/**
+ * create a suspense component
+ *
+ * @param props - The properties of the component.
+ * @returns The suspense component.
+ */
 declare function Suspense(props: {
     fallback: JSX.Element;
     children: JSX.Element;
 }): Text;
 
+/**
+ * create a root element
+ *
+ * @param $root - The root element.
+ * @param App - The app to render.
+ */
 declare function createRoot($root: HTMLElement, App: () => JSX.Element): void;
 
+/**
+ * memoize a function
+ *
+ * @param fn - The function to memoize.
+ * @returns The memoized function.
+ */
 declare function memo<T>(fn: () => T): () => T;
 
+/**
+ * unwraps proxy objects
+ *
+ * @param value - The value to unwrap.
+ * @returns The unwrapped value.
+ */
 declare function unwrap<T>(value: any): Partial<T>;
 
+/**
+ * log the JSX elements
+ *
+ * @param $nodes - The nodes to log.
+ * @returns The nodes that are not text nodes and are not in the componentRootNodes set.
+ */
 declare function logJsx($nodes: Node[]): Node | Node[];
 
 export { Suspense, computed, createRoot, effect, logJsx, loop, memo, onDestroy, onMount, resource, state, store, untrack, unwrap };
