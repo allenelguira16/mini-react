@@ -1,10 +1,7 @@
 import { activeEffect, EffectFn } from "./effect";
 
 // WeakMap to track which targets/keys map to which effects
-const targetToPropertyEffectsMap: WeakMap<
-  object,
-  Map<PropertyKey, Set<EffectFn>>
-> = new WeakMap();
+const targetToPropertyEffectsMap: WeakMap<object, Map<PropertyKey, Set<EffectFn>>> = new WeakMap();
 
 export function track(target: object, key: PropertyKey) {
   if (!activeEffect) return; // No effect is currently running

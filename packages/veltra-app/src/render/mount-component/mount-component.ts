@@ -1,5 +1,6 @@
+import { initializeLifecycleContext, LifecycleContext, registerLifeCycles } from "~/life-cycle";
 import { untrack } from "~/reactivity";
-import { LifecycleContext, initializeLifecycleContext, registerLifeCycles } from "~/life-cycle";
+
 import { resolveComponentProps } from "./resolve-component-props";
 
 export const componentRootNodes = new Set<Node>();
@@ -12,7 +13,7 @@ export const componentRootNodes = new Set<Node>();
  * @param children - The children of the component.
  */
 export function mountComponent(
-  type: Function,
+  type: (props: Record<string, any>) => any,
   props: Record<string, any>,
   children: JSX.Element[],
 ) {
@@ -26,7 +27,7 @@ export function mountComponent(
 
   initializeLifecycleContext(lifecycleContext);
 
-  let $node = untrack(() => type({ ...props, children }));
+  const $node = untrack(() => type({ ...props, children }));
   let $target = $node;
 
   if (Array.isArray($node)) {

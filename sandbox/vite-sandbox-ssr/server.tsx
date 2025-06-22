@@ -1,9 +1,9 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+
 import express from "express";
 import { createServer as createViteServer } from "vite";
-import pretty from "pretty";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -29,7 +29,7 @@ async function createServer() {
   app.use("*all", async (_req, res) => {
     // serve index.html - we will tackle this next
 
-    let template = fs.readFileSync(path.resolve(__dirname, "index.html"), "utf-8");
+    const template = fs.readFileSync(path.resolve(__dirname, "index.html"), "utf-8");
 
     const { render } = await vite.ssrLoadModule("./src/entry-server.tsx");
 

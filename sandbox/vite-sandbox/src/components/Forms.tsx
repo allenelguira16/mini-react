@@ -1,4 +1,5 @@
 import { effect, store } from "@veltra/app";
+
 import { name } from "../globalState";
 
 export const Forms = () => {

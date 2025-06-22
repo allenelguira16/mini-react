@@ -2,11 +2,11 @@ import { track, trigger } from "./track";
 
 export type Store<T extends object> = T;
 
-const proxyMap = new WeakMap<object, any>();
+const proxyMap = new WeakMap<object, unknown>();
 
 export function store<T extends object>(initialObject: T): Store<T> {
   function createReactiveObject(obj: T): T {
-    if (proxyMap.has(obj)) return proxyMap.get(obj);
+    if (proxyMap.has(obj)) return proxyMap.get(obj) as T;
 
     const proxy = new Proxy(obj, {
       get(target, key, receiver) {
@@ -27,12 +27,8 @@ export function store<T extends object>(initialObject: T): Store<T> {
         }
 
         // Deep reactivity, but avoid DOM Nodes
-        if (
-          typeof result === "object" &&
-          result !== null &&
-          !(result instanceof Node)
-        ) {
-          return createReactiveObject(result as any);
+        if (typeof result === "object" && result !== null && !(result instanceof Node)) {
+          return createReactiveObject(result as T);
         }
 
         return result;

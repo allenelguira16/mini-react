@@ -8,7 +8,7 @@ declare global {
     }
 
     interface ElementChildrenAttribute {
-      children: {};
+      children: object;
     }
   }
 }

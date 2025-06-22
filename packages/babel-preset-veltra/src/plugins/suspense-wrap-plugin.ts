@@ -8,7 +8,7 @@ export const suspenseWrapPlugin = declare((api) => {
   return {
     visitor: {
       Program(path) {
-        let suspenseNames = new Set<string>(["Suspense"]);
+        const suspenseNames = new Set<string>(["Suspense"]);
 
         // Detect imported Suspense aliases
         path.traverse({

@@ -1,7 +1,8 @@
 import { runComponentCleanup } from "~/life-cycle";
 import { state, untrack } from "~/reactivity";
 import { toArray } from "~/util";
-import { Entry } from "./index";
+
+import { Entry } from "./loop";
 
 /**
  * remove the entry nodes

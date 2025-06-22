@@ -3,7 +3,7 @@ import { effect, store } from "~/reactivity";
 export function resource<T>(fetcher: () => Promise<T>) {
   const data = store({
     loading: true,
-    error: null as any,
+    error: null as Error | null,
     data: undefined as T,
   });
 

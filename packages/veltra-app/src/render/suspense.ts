@@ -1,5 +1,6 @@
-import { getNode, toArray } from "~/util";
 import { effect, state } from "~/reactivity";
+import { getNode, toArray } from "~/util";
+
 import { patch } from "./render-children/patch";
 
 export const suspensePromise = state<Promise<void> | null>(null);
@@ -11,7 +12,7 @@ export const suspensePromise = state<Promise<void> | null>(null);
  * @returns The suspense component.
  */
 export function Suspense(props: { fallback: JSX.Element; children: JSX.Element }) {
-  let $rootNode = document.createTextNode("");
+  const $rootNode = document.createTextNode("");
   let $parent: Node;
 
   // Change types since this is transformed by babel

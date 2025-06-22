@@ -1,14 +1,19 @@
 export { F as Fragment } from './fragment-DsTMuH_N.js';
 
-type MountFn = () => void | (() => void);
-declare function onMount(fn: () => () => void): void;
-declare function onMount(fn: () => void): void;
+type Computed<T> = {
+    readonly value: T;
+};
+declare function computed<T>(getter: () => T): Computed<T>;
 
-type DestroyFn = () => void;
-declare function onDestroy(fn: () => void): void;
+declare function effect(fn: () => void): () => void;
 
-type Store<T extends object> = T;
-declare function store<T extends object>(initialObject: T): Store<T>;
+declare function resource<T>(fetcher: () => Promise<T>): {
+    readonly loading: boolean;
+    readonly error: Error | null;
+    readonly data: T;
+    refetch: () => Promise<void>;
+    mutate(newValue: T): void;
+};
 
 type State<T> = {
     value: T;
@@ -16,22 +21,25 @@ type State<T> = {
 declare function state<T>(initialValue: T): State<T>;
 declare function state<T = undefined>(): State<T | undefined>;
 
-declare function effect(fn: () => void): () => void;
-
-type Computed<T> = {
-    readonly value: T;
-};
-declare function computed<T>(getter: () => T): Computed<T>;
+type Store<T extends object> = T;
+declare function store<T extends object>(initialObject: T): Store<T>;
 
 declare function untrack<T>(fn: () => T): T;
 
-declare function resource<T>(fetcher: () => Promise<T>): {
-    readonly loading: boolean;
-    readonly error: any;
-    readonly data: T;
-    refetch: () => Promise<void>;
-    mutate(newValue: T): void;
-};
+type DestroyFn = () => void;
+declare function onDestroy(fn: () => void): void;
+
+type MountFn = () => void | (() => void);
+declare function onMount(fn: () => () => void): void;
+declare function onMount(fn: () => void): void;
+
+/**
+ * create a root element
+ *
+ * @param $root - The root element.
+ * @param App - The app to render.
+ */
+declare function createRoot($root: HTMLElement, App: () => JSX.Element): void;
 
 /**
  * create a loop component
@@ -55,12 +63,12 @@ declare function Suspense(props: {
 }): Text;
 
 /**
- * create a root element
+ * log the JSX elements
  *
- * @param $root - The root element.
- * @param App - The app to render.
+ * @param $nodes - The nodes to log.
+ * @returns The nodes that are not text nodes and are not in the componentRootNodes set.
  */
-declare function createRoot($root: HTMLElement, App: () => JSX.Element): void;
+declare function logJsx($nodes: Node[]): Node | Node[];
 
 /**
  * memoize a function
@@ -77,14 +85,6 @@ declare function memo<T>(fn: () => T): () => T;
  * @returns The unwrapped value.
  */
 declare function unwrap<T>(value: any): Partial<T>;
-
-/**
- * log the JSX elements
- *
- * @param $nodes - The nodes to log.
- * @returns The nodes that are not text nodes and are not in the componentRootNodes set.
- */
-declare function logJsx($nodes: Node[]): Node | Node[];
 
 export { Suspense, computed, createRoot, effect, logJsx, loop, memo, onDestroy, onMount, resource, state, store, untrack, unwrap };
 export type { Computed, DestroyFn, MountFn, State };

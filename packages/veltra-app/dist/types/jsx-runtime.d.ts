@@ -10,7 +10,7 @@ declare global {
     }
 
     interface ElementChildrenAttribute {
-      children: {};
+      children: object;
     }
   }
 }
@@ -23,6 +23,6 @@ declare global {
  * @param children - The children of the element.
  * @returns The JSX element.
  */
-declare const jsx: (type: string | Function, { children, ...props }: Record<string, any>) => any;
+declare const jsx: (type: string | ((props: Record<string, any>) => any), { children, ...props }: Record<string, any>) => any;
 
 export { jsx, jsx as jsxs };

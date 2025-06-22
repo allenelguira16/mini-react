@@ -1,8 +1,8 @@
+import "./jsx.d";
+
 import { IS_SSR } from "./const";
 import { Fragment, h, hSSR } from "./render";
 import { toArray } from "./util";
-
-import "./jsx.d";
 
 /**
  * jsx runtime
@@ -12,7 +12,10 @@ import "./jsx.d";
  * @param children - The children of the element.
  * @returns The JSX element.
  */
-const jsx = (type: string | Function, { children = [], ...props }: Record<string, any>) => {
+const jsx = (
+  type: string | ((props: Record<string, any>) => any),
+  { children = [], ...props }: Record<string, any>,
+) => {
   if (IS_SSR) {
     return hSSR(type, props, toArray(children));
   }
@@ -20,4 +23,4 @@ const jsx = (type: string | Function, { children = [], ...props }: Record<string
   return h(type, props, toArray(children));
 };
 
-export { jsx, jsx as jsxs, Fragment };
+export { Fragment, jsx, jsx as jsxs };

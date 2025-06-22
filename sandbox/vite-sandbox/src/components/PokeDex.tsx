@@ -1,7 +1,7 @@
 import { effect, loop, store } from "@veltra/app";
+import { sleep } from "src/sleep";
 
 import { name } from "../globalState";
-import { sleep } from "src/sleep";
 
 type PokeDexData = {
   count: number;

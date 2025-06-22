@@ -1,10 +1,10 @@
-import { nodeResolve } from "@rollup/plugin-node-resolve";
 import commonjs from "@rollup/plugin-commonjs";
 import json from "@rollup/plugin-json";
+import { nodeResolve } from "@rollup/plugin-node-resolve";
 import { defineConfig } from "rollup";
-import esbuild from "rollup-plugin-esbuild";
-import dts from "rollup-plugin-dts";
 import del from "rollup-plugin-delete";
+import dts from "rollup-plugin-dts";
+import esbuild from "rollup-plugin-esbuild";
 
 const { default: pkg } = await import("./package.json", {
   with: { type: "json" },

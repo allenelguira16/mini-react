@@ -1,6 +1,6 @@
 import { Suspense } from "../suspense";
 
-const IGNORE_COMPONENT = [Suspense] as Function[];
+const IGNORE_COMPONENT = [Suspense] as Array<(...args: any[]) => any>;
 
 /**
  * resolve the component props
@@ -8,7 +8,7 @@ const IGNORE_COMPONENT = [Suspense] as Function[];
  * @param type - The type of the component.
  * @param props - The properties of the component.
  */
-export function resolveComponentProps(type: Function, props: Record<string, any>) {
+export function resolveComponentProps(type: (...args: any[]) => any, props: Record<string, any>) {
   if (IGNORE_COMPONENT.includes(type)) return;
 
   for (const key in props) {

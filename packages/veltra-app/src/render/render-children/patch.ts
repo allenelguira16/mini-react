@@ -1,5 +1,5 @@
-import { isNil } from "~/util";
 import { runComponentCleanup } from "~/life-cycle";
+import { isNil } from "~/util";
 
 /**
  * patch the old nodes with the new nodes
@@ -61,7 +61,7 @@ export function patch(
       continue;
     }
 
-    console.log(`[veltra]: warning - unknown dom detected: `, {
+    console.warn(`[veltra]: warning - unknown dom detected: `, {
       old: $oldNode,
       new: $newNode,
     });

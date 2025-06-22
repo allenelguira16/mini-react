@@ -1,15 +1,13 @@
 export function hSSR(
-  type: string | Function,
+  type: string | ((props: Record<string, any>) => any),
   props: Record<string, any>,
-  children: JSX.Element[]
+  children: JSX.Element[],
 ) {
   if (typeof type === "function") {
     return type({ ...props, children });
   }
 
-  return `<${type} ${handlePropsSSR(props)}>${handleChildrenSSR(
-    children
-  )}</${type}>`;
+  return `<${type} ${handlePropsSSR(props)}>${handleChildrenSSR(children)}</${type}>`;
 }
 
 function handlePropsSSR(props: Record<string, any>) {
@@ -26,10 +24,10 @@ function handlePropsSSR(props: Record<string, any>) {
       // value($element);
     } else if (key === "style") {
       // applyStyle($element, value);
-    } else if (key === "disabled") {
-      value && transformedProps.push("disabled");
+    } else if (key === "disabled" && value) {
+      transformedProps.push("disabled");
     } else {
-      transformedProps.push(`${key}=\"${value}\"`);
+      transformedProps.push(`${key}="${value}"`);
     }
   }
 
@@ -37,16 +35,14 @@ function handlePropsSSR(props: Record<string, any>) {
 }
 
 function handleChildrenSSR(children: JSX.Element[]) {
-  let transformedChildren: string[] = [];
+  const transformedChildren: string[] = [];
 
   for (const child of children) {
     if (typeof child === "function") {
       transformedChildren.push(String(child()));
     } else if (Array.isArray(child)) {
       // RECURSIVELY flatten nested arrays
-      child.forEach((nested) =>
-        transformedChildren.push(handleChildrenSSR([nested]))
-      );
+      child.forEach((nested) => transformedChildren.push(handleChildrenSSR([nested])));
     } else {
       // console.log(child);
       transformedChildren.push(child as string);

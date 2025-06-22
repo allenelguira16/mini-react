@@ -1,5 +1,6 @@
-import { effect as reactor } from "../reactivity";
 import { UNIT_LESS_PROPS } from "~/const";
+
+import { effect as reactor } from "../reactivity";
 
 /**
  * apply the properties to the element
@@ -49,14 +50,17 @@ export function applyProps($element: HTMLElement | Element, props: Record<string
  * @param style - The style to apply.
  */
 function applyStyle($element: HTMLElement | Element, style: Record<string, any>) {
+  if (!($element instanceof HTMLElement)) return;
+
   for (const [key, value] of Object.entries(style)) {
-    if (typeof value === "number" && !isUnitLessCSSProperty(key)) {
-      // @ts-ignore
-      $element.style[key] = `${value}px`;
-    } else {
-      // @ts-ignore
-      $element.style[key] = value;
-    }
+    const cssKey = key as keyof CSSStyleDeclaration;
+    if (cssKey === "length" || cssKey === "parentRule") continue;
+
+    const isNumber = typeof value === "number";
+    const needsUnit = isNumber && !isUnitLessCSSProperty(key);
+    const finalValue = needsUnit ? `${value}px` : String(value);
+
+    $element.style.setProperty(String(cssKey), finalValue);
   }
 }
 

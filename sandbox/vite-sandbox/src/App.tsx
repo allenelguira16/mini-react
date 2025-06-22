@@ -1,8 +1,9 @@
+import { location, navigate, Route, Router } from "@veltra/router";
+
 import { Dropdowns } from "./components/DropdownList";
-import { PokeDex } from "./components/PokeDex";
 import { Forms } from "./components/Forms";
+import { PokeDex } from "./components/PokeDex";
 import { PokeDexSuspense } from "./components/PokeDexSuspense";
-import { navigate, location, Route, Router } from "@veltra/router";
 
 export const App = () => {
   const routes: Route[] = [

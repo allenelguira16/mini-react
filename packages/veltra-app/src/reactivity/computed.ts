@@ -1,5 +1,5 @@
-import { state } from "./state"; // your Veltra's state()
 import { effect } from "./effect";
+import { state } from "./state"; // your Veltra's state()
 
 export type Computed<T> = {
   readonly value: T;

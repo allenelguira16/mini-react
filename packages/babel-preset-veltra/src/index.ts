@@ -1,6 +1,7 @@
-import { TransformOptions, ConfigAPI } from "@babel/core";
-// @ts-ignore
+import { ConfigAPI, TransformOptions } from "@babel/core";
+// @ts-expect-error - babel-preset-react is not typed
 import babelReactPlugin from "@babel/preset-react";
+
 import {
   logJsxPlugin,
   loopAutoWrapPlugin,

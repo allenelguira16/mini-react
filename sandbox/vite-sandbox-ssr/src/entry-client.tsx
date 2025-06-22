@@ -1,4 +1,5 @@
 import { setCurrentRenderingDOM } from "@veltra/app";
+
 import { App } from "./App";
 
 function hydrateRoot($root: HTMLElement, app: () => JSX.Element) {

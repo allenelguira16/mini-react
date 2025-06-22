@@ -1,6 +1,7 @@
 import { getNode, toArray } from "~/util";
-import { suspenseReactor } from "./suspense-effect";
+
 import { patch } from "./patch";
+import { suspenseReactor } from "./suspense-effect";
 
 /**
  * render the children

@@ -1,11 +1,18 @@
 {
   "compilerOptions": {
-    "emitDeclarationOnly": false,
-    "module": "esnext",
-    "target": "ES2020",
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "skipLibCheck": true
+    // "baseUrl": ".",
+    // "emitDeclarationOnly": false,
+    // "module": "esnext",
+    // "target": "ES2020",
+    // "moduleResolution": "bundler",
+    // "esModuleInterop": true,
+    // "skipLibCheck": true
+    // "paths": {
+    //   "@veltra/app": ["./packages/veltra-app/src"],
+    //   "@veltra/router": ["./packages/veltra-router/src"],
+    //   "vite-plugin-veltra": ["./packages/vite-plugin-veltra/src"],
+    //   "@babel/preset-veltra": ["./packages/babel-preset-veltra/src"]
+    // }
   },
   "exclude": ["node_modules"]
 }

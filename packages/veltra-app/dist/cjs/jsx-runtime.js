@@ -1,10 +1,2 @@
-'use strict';
-
-var jsxRuntime = require('./chunks/register-lifecycle-8cNbrrMx.js');
-
-
-
-exports.Fragment = jsxRuntime.Fragment;
-exports.jsx = jsxRuntime.jsx;
-exports.jsxs = jsxRuntime.jsx;
+"use strict";var e=require("./chunks/register-lifecycle-Ds0-d7BW.js");exports.Fragment=e.Fragment,exports.jsx=e.m,exports.jsxs=e.m;
 //# sourceMappingURL=jsx-runtime.js.map

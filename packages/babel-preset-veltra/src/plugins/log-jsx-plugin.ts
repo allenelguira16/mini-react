@@ -26,10 +26,7 @@ export const logJsxPlugin = declare((api) => {
 
         // Check existing imports
         path.get("body").forEach((child) => {
-          if (
-            child.isImportDeclaration() &&
-            child.node.source.value === "@veltra/app"
-          ) {
+          if (child.isImportDeclaration() && child.node.source.value === "@veltra/app") {
             child.node.specifiers.forEach((spec) => {
               if (t.isImportSpecifier(spec)) {
                 const imported = spec.imported;
@@ -45,7 +42,7 @@ export const logJsxPlugin = declare((api) => {
         if (!hasLogJsx) {
           const importDecl = t.importDeclaration(
             [t.importSpecifier(t.identifier("logJsx"), t.identifier("logJsx"))],
-            t.stringLiteral("@veltra/app")
+            t.stringLiteral("@veltra/app"),
           );
           path.unshiftContainer("body", importDecl);
         }

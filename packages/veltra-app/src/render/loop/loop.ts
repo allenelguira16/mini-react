@@ -1,7 +1,8 @@
 import { jsx } from "~/jsx-runtime";
 import { onDestroy, onMount } from "~/life-cycle";
-import { componentRootNodes, suspensePromise } from "~/render";
 import { effect, State } from "~/reactivity";
+import { componentRootNodes, suspensePromise } from "~/render";
+
 import { newEntries, removeEntryNodes, removeOldNodes, reorderEntries } from "./util";
 
 type ForProps<T> = {
@@ -37,7 +38,7 @@ export function loop<T>(items: T[]) {
           const $rootNode = document.createTextNode("");
 
           let entries: Entry<T>[] = [];
-          let idCounter = 0;
+          const idCounter = 0;
 
           function reconcile($parent: Node, items: T[]) {
             // Remove extra

@@ -1,13 +1,13 @@
-export { type MountFn, type DestroyFn, onMount, onDestroy } from "./life-cycle";
+export { type DestroyFn, type MountFn, onDestroy, onMount } from "./life-cycle";
 export {
-  type State,
   type Computed,
-  store,
-  state,
-  effect,
-  untrack,
-  resource,
   computed,
+  effect,
+  resource,
+  type State,
+  state,
+  store,
+  untrack,
 } from "./reactivity";
-export { Suspense, createRoot, loop, Fragment } from "./render";
-export { unwrap, memo, logJsx } from "./util";
+export { createRoot, Fragment, loop, Suspense } from "./render";
+export { logJsx, memo, unwrap } from "./util";

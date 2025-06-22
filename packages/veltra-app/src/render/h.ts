@@ -1,8 +1,9 @@
-import { renderChildren } from "./render-children";
-import { applyProps } from "./apply-props";
-import { mountComponent } from "./mount-component";
 import { MATH_ML_TAGS, SVG_TAGS } from "~/const";
 import { Fragment } from "~/jsx-runtime";
+
+import { applyProps } from "./apply-props";
+import { mountComponent } from "./mount-component";
+import { renderChildren } from "./render-children";
 
 /**
  * create a JSX element
@@ -12,7 +13,11 @@ import { Fragment } from "~/jsx-runtime";
  * @param children - The children of the element.
  * @returns The JSX element.
  */
-export function h(type: string | Function, props: Record<string, any>, children: JSX.Element[]) {
+export function h(
+  type: string | ((props: Record<string, any>) => any),
+  props: Record<string, any>,
+  children: JSX.Element[],
+) {
   if (type === Fragment) {
     return children;
   }

@@ -1,10 +1,10 @@
 import { setDestroyContext, setEffectContext, setMountContext } from "~/context";
-import { removeEffect } from "../reactivity";
-import { EffectFn } from "../reactivity";
+import { EffectFn, removeEffect } from "~/reactivity";
+import { onNodeReattached } from "~/util";
+
 import { registerComponentCleanup } from "./component-cleanup";
 import { DestroyFn } from "./on-destroy";
 import { MountFn } from "./on-mount";
-import { onNodeReattached } from "~/util";
 
 export type LifecycleContext = {
   mount: MountFn[];

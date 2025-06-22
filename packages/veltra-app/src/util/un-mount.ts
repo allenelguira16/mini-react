@@ -4,7 +4,7 @@
  * @param $target - The target node to observe.
  * @param callback - The callback to call when the node is removed.
  */
-export const unMount = ($target: Node, callback: Function) => {
+export const unMount = ($target: Node, callback: () => void) => {
   const observer = new MutationObserver((mutations) => {
     for (const mutation of mutations) {
       const isRemoved = Array.from(mutation.removedNodes).includes($target);
