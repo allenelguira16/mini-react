@@ -1,6 +1,6 @@
-import { state } from "@veltra/app";
+import { store } from "@veltra/app";
 
-export const name = state({
+export const name = store({
   firstName: "First name",
   lastName: "Last name",
 });

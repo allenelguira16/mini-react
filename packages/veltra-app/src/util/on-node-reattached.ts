@@ -1,3 +1,9 @@
+/**
+ * observe a node and call a callback when it is reattached
+ *
+ * @param callback - The callback to call when the node is reattached.
+ * @param $node - The node to observe.
+ */
 export function onNodeReattached(callback: () => void, $node: Node) {
   // Create a MutationObserver instance
   const observer = new MutationObserver((mutationsList) => {

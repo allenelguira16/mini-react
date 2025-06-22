@@ -25,6 +25,11 @@ window.addEventListener("popstate", () => {
   };
 });
 
+/**
+ * navigate to a path
+ *
+ * @param path - The path to navigate to.
+ */
 export function navigate(path: string) {
   history.pushState(null, "", path);
   location.value = {
@@ -44,6 +49,12 @@ function matchRoute(path: string, routes: Route[]): Route | undefined {
   return undefined;
 }
 
+/**
+ * create a router
+ *
+ * @param props - The properties of the router.
+ * @returns The router.
+ */
 export function Router(props: { routes: Route[] }) {
   const current = state<() => JSX.Element>(() => <></>);
 

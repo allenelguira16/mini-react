@@ -1,14 +1,16 @@
 import { getNode, toArray } from "~/util";
 import { effect, state } from "~/reactivity";
-import { patch } from "./patch";
-import { setCurrentSuspense, SuspenseInstance } from "~/context";
+import { patch } from "./render-children/patch";
 
 export const suspensePromise = state<Promise<void> | null>(null);
 
-export function Suspense(props: {
-  fallback: JSX.Element;
-  children: JSX.Element;
-}) {
+/**
+ * create a suspense component
+ *
+ * @param props - The properties of the component.
+ * @returns The suspense component.
+ */
+export function Suspense(props: { fallback: JSX.Element; children: JSX.Element }) {
   let $rootNode = document.createTextNode("");
   let $parent: Node;
 

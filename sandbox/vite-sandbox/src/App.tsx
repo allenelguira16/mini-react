@@ -7,9 +7,28 @@ import { navigate, location, Route, Router } from "@veltra/router";
 export const App = () => {
   const routes: Route[] = [
     {
+      path: "/",
+      component: () => (
+        <>
+          <Template title="PokeDex List">
+            <PokeDex />
+          </Template>
+          <Template title="PokeDex List (via Suspense)">
+            <PokeDexSuspense />
+          </Template>
+          <Template title="Dropdown List">
+            <Dropdowns />
+          </Template>
+          <Template title="Forms">
+            <Forms />
+          </Template>
+        </>
+      ),
+    },
+    {
       path: "/pokedex-list",
       component: () => (
-        <Template title="Dropdown List">
+        <Template title="PokeDex List">
           <PokeDex />
         </Template>
       ),
@@ -17,7 +36,7 @@ export const App = () => {
     {
       path: "/pokedex-list-suspense",
       component: () => (
-        <Template title="Dropdown List">
+        <Template title="PokeDex List (via Suspense)">
           <PokeDexSuspense />
         </Template>
       ),
@@ -33,7 +52,7 @@ export const App = () => {
     {
       path: "/forms",
       component: () => (
-        <Template title="Dropdown List">
+        <Template title="Forms">
           <Forms />
         </Template>
       ),
@@ -41,22 +60,14 @@ export const App = () => {
   ];
 
   return (
-    <>
-      <div class="p-2 flex flex-col container m-auto">
-        <ButtonPageList />
-        <Router routes={routes} />
-      </div>
-    </>
+    <div class="p-2 flex flex-col container m-auto">
+      <ButtonPageList />
+      <Router routes={routes} />
+    </div>
   );
 };
 
-const Template = ({
-  title,
-  children,
-}: {
-  title: string;
-  children: JSX.Element;
-}) => {
+const Template = ({ title, children }: { title: string; children: JSX.Element }) => {
   return (
     <div class="p-2 w-full">
       <h1 class="font-bold text-2xl mb-2">{title}</h1>
@@ -69,6 +80,11 @@ const ButtonPageList = () => {
   return (
     <Template title="Pages">
       <ul class="flex flex-col gap-2">
+        <li>
+          <button onClick={() => navigate("/")} disabled={location.value.pathname === "/"}>
+            All
+          </button>
+        </li>
         <li>
           <button
             onClick={() => navigate("/pokedex-list")}

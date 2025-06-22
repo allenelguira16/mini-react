@@ -1,12 +1,12 @@
 import { isNil } from "./is-node-nil";
 
-export function getNode(
-  jsxElement: JSX.Element
-): undefined | Node | (Node | undefined)[] {
-  if (typeof jsxElement === "string" || typeof jsxElement === "number") {
-    return document.createTextNode(String(jsxElement));
-  }
-
+/**
+ * get the node for a JSX element
+ *
+ * @param jsxElement - The JSX element to get the node for.
+ * @returns The node for the JSX element.
+ */
+export function getNode(jsxElement: JSX.Element): undefined | Node | (Node | undefined)[] {
   if (jsxElement instanceof Node) {
     return jsxElement;
   }
@@ -23,5 +23,5 @@ export function getNode(
     return jsxElement.map(getNode) as (Node | undefined)[];
   }
 
-  console.log("Unknown JSX Element", jsxElement);
+  return document.createTextNode(String(jsxElement));
 }

@@ -1,12 +1,15 @@
-import { effect as reactor } from "../reactivity";
-import { patch } from "./patch";
 import { getNode, toArray } from "~/util";
+import { suspenseReactor } from "./suspense-effect";
+import { patch } from "./patch";
 
-export function renderChildren(
-  $parent: Node,
-  children: JSX.Element[],
-  index?: number
-) {
+/**
+ * render the children
+ *
+ * @param $parent - The parent node.
+ * @param children - The children to render.
+ * @param index - The index to insert the children at.
+ */
+export function renderChildren($parent: Node, children: JSX.Element[], index?: number) {
   let insertBeforeNode: ChildNode | null = null;
 
   if (index !== undefined) {
@@ -34,26 +37,4 @@ export function renderChildren(
       }
     }
   }
-}
-
-function suspenseReactor(fn: () => void) {
-  let cleanup: (() => void) | null = null;
-
-  const run = () => {
-    if (cleanup) cleanup();
-
-    cleanup = reactor(() => {
-      try {
-        fn();
-      } catch (e) {
-        if (e instanceof Promise) {
-          e.then(run).catch(console.error);
-        } else {
-          console.error(e);
-        }
-      }
-    });
-  };
-
-  run();
 }

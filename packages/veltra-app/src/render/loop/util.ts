@@ -1,9 +1,14 @@
 import { runComponentCleanup } from "~/life-cycle";
 import { state, untrack } from "~/reactivity";
+import { toArray } from "~/util";
 import { Entry } from "./index";
-import { toArray } from "../to-array";
 
-// Helpers
+/**
+ * remove the entry nodes
+ *
+ * @param $parent - The parent node.
+ * @param entry - The entry to remove.
+ */
 export function removeEntryNodes<T>($parent: Node, entry: Entry<T>) {
   for (const node of entry.nodes) {
     if ($parent.contains(node)) {
@@ -13,22 +18,28 @@ export function removeEntryNodes<T>($parent: Node, entry: Entry<T>) {
   }
 }
 
-export function insertNodes(
-  $parent: Node,
-  nodes: Node[],
-  referenceNode: Node | null
-) {
+/**
+ * insert the nodes
+ *
+ * @param $parent - The parent node.
+ * @param nodes - The nodes to insert.
+ * @param referenceNode - The reference node.
+ */
+export function insertNodes($parent: Node, nodes: Node[], referenceNode: Node | null) {
   for (const node of nodes) {
     $parent.insertBefore(node, referenceNode);
   }
 }
 
-export function reorderEntries<T>(
-  $rootNode: Node,
-  $parent: Node,
-  entries: Entry<T>[],
-  items: T[]
-) {
+/**
+ * reorder the entries
+ *
+ * @param $rootNode - The root node.
+ * @param $parent - The parent node.
+ * @param entries - The entries to reorder.
+ * @param items - The items to reorder.
+ */
+export function reorderEntries<T>($rootNode: Node, $parent: Node, entries: Entry<T>[], items: T[]) {
   const placeCounts = new Map<T, number>();
   let ref: Node | null = $rootNode.nextSibling;
 
@@ -36,9 +47,7 @@ export function reorderEntries<T>(
     const item = items[i];
     placeCounts.set(item, (placeCounts.get(item) || 0) + 1);
     let count = 0;
-    const entry = entries.find(
-      (e) => e.item === item && ++count === placeCounts.get(item)
-    );
+    const entry = entries.find((e) => e.item === item && ++count === placeCounts.get(item));
     if (!entry) continue;
     untrack(() => (entry.index.value = i));
     insertNodes($parent, entry.nodes, ref);
@@ -46,17 +55,26 @@ export function reorderEntries<T>(
   }
 }
 
+/**
+ * count the occurrences of an item in a list
+ *
+ * @param list - The list to count the occurrences of.
+ * @returns The occurrences of the item in the list.
+ */
 export function countOccurrences<T>(list: T[]) {
   const counts = new Map<T, number>();
   for (const item of list) counts.set(item, (counts.get(item) || 0) + 1);
   return counts;
 }
 
-export function removeOldNodes<T>(
-  $parent: Node,
-  items: T[],
-  entries: Entry<T>[]
-) {
+/**
+ * remove the old nodes
+ *
+ * @param $parent - The parent node.
+ * @param items - The items to remove.
+ * @param entries - The entries to remove.
+ */
+export function removeOldNodes<T>($parent: Node, items: T[], entries: Entry<T>[]) {
   const newCounts = countOccurrences(items);
   const oldCounts = countOccurrences(entries.map((e) => e.item));
 
@@ -70,6 +88,15 @@ export function removeOldNodes<T>(
   });
 }
 
+/**
+ * create new entries
+ *
+ * @param items - The items to create new entries for.
+ * @param entries - The entries to create new entries for.
+ * @param children - The children to create new entries for.
+ * @param idCounter - The id counter.
+ * @returns The new entries.
+ */
 export function newEntries<T>(
   items: T[],
   entries: Entry<T>[],
@@ -77,9 +104,9 @@ export function newEntries<T>(
     item: T,
     index: {
       value: number;
-    }
+    },
   ) => JSX.Element,
-  idCounter: number
+  idCounter: number,
 ) {
   const addedEntries: Entry<T>[] = [];
   const seenCounts = new Map<T, number>();

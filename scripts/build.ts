@@ -7,8 +7,8 @@ const workspaces = [
   "@veltra/router",
 ];
 
+console.clear();
 for (const workspace of workspaces) {
-  console.clear();
   try {
     console.log(`Building for ${workspace}`);
     execSync(`yarn workspace ${workspace} build`, { stdio: "inherit" });

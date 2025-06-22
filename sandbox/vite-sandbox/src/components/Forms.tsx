@@ -1,4 +1,4 @@
-import { state, computed, effect } from "@veltra/app";
+import { effect, store } from "@veltra/app";
 import { name } from "../globalState";
 
 export const Forms = () => {
@@ -6,9 +6,9 @@ export const Forms = () => {
     <div>
       <div>
         <label class="break-all" for="name-input2">
-          Hi {name.value.firstName}
+          Hi {name.firstName}
         </label>
-        <input type="text" value={name.value.firstName} id="name-input2" />
+        <input type="text" value={name.firstName} id="name-input2" />
       </div>
       <div>
         <Counter />
@@ -19,29 +19,33 @@ export const Forms = () => {
 };
 
 function Counter() {
-  const count = state(0);
-  const double = computed(() => count.value * 2);
+  const state = store({
+    count: 0,
+    get double() {
+      return this.count * 2;
+    },
+  });
 
   const handleCount = () => {
-    count.value++;
+    state.count++;
   };
 
   effect(() => {
-    console.log(count.value);
+    console.log(state.count);
   });
 
   effect(() => {
-    console.log(double.value);
+    console.log(state.double);
   });
 
   return (
     <div>
-      <div>Count: {count.value}</div>
-      <div>Double Count: {double.value}</div>
-      <button disabled={count.value >= 5} onClick={handleCount}>
+      <div>Count: {state.count}</div>
+      <div>Double Count: {state.double}</div>
+      <button disabled={state.count >= 5} onClick={handleCount}>
         Add counter
       </button>
-      <div>{count.value <= 3 ? <div>Hi</div> : "string"}</div>
+      <div>{state.count <= 3 ? <div>Hi</div> : "string"}</div>
     </div>
   );
 }
@@ -50,16 +54,16 @@ function Input() {
   return (
     <div>
       <label class="break-all" for="name-input">
-        Name {name.value.firstName}
+        Name {name.firstName}
       </label>
       <input
         id="name-input"
         type="text"
         onInput={(event: KeyboardEvent) => {
           const input = event.currentTarget as HTMLInputElement;
-          name.value = { ...name.value, firstName: input.value };
+          name.firstName = input.value;
         }}
-        value={name.value.firstName}
+        value={name.firstName}
       />
     </div>
   );

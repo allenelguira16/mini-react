@@ -1,2 +1,266 @@
-import{m,d as v,s as f,e as d,a as h,b as C,r as M,t as p,c as S,f as b,g as P,h as g}from"./chunks/register-lifecycle-YHrUheQc.js";import{S as G}from"./chunks/register-lifecycle-YHrUheQc.js";function w(n){if(m)m.push(n);else throw new Error("onMount called outside of component")}function x(n){if(v)v.push(n);else throw new Error("onDestroy called outside of component")}function A(n){const e=f();return d(()=>{e.value=n()}),{get value(){return e.value}}}function y(n){const e=C;h(null);try{return n()}finally{h(e)}}function D(n){const e=f(!0),t=f(null),i=f(0);let c=f(),o;const r=()=>(e.value=!0,c.value=new Promise((s,l)=>{n().then(u=>{o=u,e.value=!1,t.value=null,i.value++,s()}).catch(u=>{t.value=u,e.value=!1,i.value++,l(u)})}),c.value);return d(()=>{r()}),{get value(){i.value;const s=c.value;if(e.value)throw s;if(t.value)throw t.value;return o},loading:e,error:t,refetch:r,set mutate(s){o=s,i.value++}}}function O(n,e){M(n,p(e()))}function E(n,e){for(const t of e.nodes)n.contains(t)&&(S(t),n.removeChild(t))}function R(n,e,t){for(const i of e)n.insertBefore(i,t)}function T(n,e,t,i){const c=new Map;let o=n.nextSibling;for(let r=0;r<i.length;r++){const s=i[r];c.set(s,(c.get(s)||0)+1);let l=0;const u=t.find(a=>a.item===s&&++l===c.get(s));u&&(y(()=>u.index.value=r),R(e,u.nodes,o),o=u.nodes[u.nodes.length-1].nextSibling)}}function N(n){const e=new Map;for(const t of n)e.set(t,(e.get(t)||0)+1);return e}function k(n,e,t){const i=N(e),c=N(t.map(o=>o.item));return t.filter(o=>(c.get(o.item)??0)>(i.get(o.item)??0)?(E(n,o),c.set(o.item,(c.get(o.item)??0)-1),!1):!0)}function B(n,e,t,i){const c=[],o=new Map;for(const r of n)if(o.set(r,(o.get(r)||0)+1),e.filter(s=>s.item===r).length+c.filter(s=>s.item===r).length<(o.get(r)||0)){const s=f(-1),l=p(t(r,s));c.push({id:i++,item:r,nodes:l,index:s})}return c}function J(n){function e(t){const{items:i,children:[c]}=t,o=document.createTextNode("");let r=[],s=0;function l(u,a){r=k(u,a,r),r.push(...B(a,r,c,s)),T(o,u,r,a)}return w(()=>{d(()=>{const u=o.parentNode;if(u)try{l(u,[...i()])}catch(a){if(a instanceof Promise)P.value=a;else throw a}})}),x(()=>{for(const u of r)E(o.parentNode,u)}),g.add(o),o}return{each:t=>b(e,{items:()=>n,children:t})}}function $(n){let e,t=!0;return()=>(t&&(e=n(),t=!1),e)}function j(n){const e=[...n.filter(t=>!(t instanceof Text&&g.has(t)))];return e.length===1?e[0]:e}export{G as Suspense,A as computed,O as createRoot,d as effect,j as logJsx,J as loop,$ as memo,x as onDestroy,w as onMount,D as resource,f as state,y as untrack};
+import { m as mountContext, d as destroyContext, t as trigger, a as track, s as state, e as effect, r as runComponentCleanup, b as toArray, u as untrack, j as jsx, c as suspensePromise, f as componentRootNodes, g as renderChildren } from './chunks/register-lifecycle-DePyjZun.js';
+export { S as Suspense } from './chunks/register-lifecycle-DePyjZun.js';
+
+function onMount(fn) {
+  if (mountContext) {
+    mountContext.push(fn);
+  } else {
+    throw new Error("onMount called outside of component");
+  }
+}
+
+function onDestroy(fn) {
+  if (destroyContext) {
+    destroyContext.push(fn);
+  } else {
+    throw new Error("onDestroy called outside of component");
+  }
+}
+
+const proxyMap = /* @__PURE__ */ new WeakMap();
+function store(initialObject) {
+  function createReactiveObject(obj) {
+    if (proxyMap.has(obj)) return proxyMap.get(obj);
+    const proxy = new Proxy(obj, {
+      get(target, key, receiver) {
+        track(target, key);
+        const result = Reflect.get(target, key, receiver);
+        if (typeof result === "function") {
+          return result.bind(receiver);
+        }
+        const descriptor = Reflect.getOwnPropertyDescriptor(target, key);
+        if (descriptor?.get) {
+          return descriptor.get.call(receiver);
+        }
+        if (typeof result === "object" && result !== null && !(result instanceof Node)) {
+          return createReactiveObject(result);
+        }
+        return result;
+      },
+      set(target, key, value, receiver) {
+        const oldValue = target[key];
+        const result = Reflect.set(target, key, value, receiver);
+        if (oldValue !== value) {
+          trigger(target, key);
+        }
+        return result;
+      }
+    });
+    proxyMap.set(obj, proxy);
+    return proxy;
+  }
+  return createReactiveObject(initialObject);
+}
+
+function computed(getter) {
+  const result = state();
+  effect(() => {
+    result.value = getter();
+  });
+  return {
+    get value() {
+      return result.value;
+    }
+  };
+}
+
+function resource(fetcher) {
+  const data = store({
+    loading: true,
+    error: null,
+    data: void 0
+  });
+  let realPromise = null;
+  const refetch = () => {
+    data.loading = true;
+    realPromise = new Promise((resolve, reject) => {
+      fetcher().then((result) => {
+        data.data = result;
+        data.loading = false;
+        data.error = null;
+        resolve();
+      }).catch((err) => {
+        data.error = err;
+        data.loading = false;
+        reject(err);
+      });
+    });
+    return realPromise;
+  };
+  effect(() => {
+    refetch();
+  });
+  return {
+    get loading() {
+      return data.loading;
+    },
+    get error() {
+      return data.error;
+    },
+    get data() {
+      if (data.loading) throw realPromise;
+      if (!data.loading && data.error) throw data.error;
+      return data.data;
+    },
+    refetch,
+    mutate(newValue) {
+      data.data = newValue;
+    }
+  };
+}
+
+function memo(fn) {
+  let cachedResult;
+  let firstRun = true;
+  return () => {
+    if (firstRun) {
+      cachedResult = fn();
+      firstRun = false;
+    }
+    return cachedResult;
+  };
+}
+
+function unwrap(value) {
+  function deepUnwrap(obj) {
+    if (obj === null || typeof obj !== "object") return obj;
+    if (typeof obj === "function") return obj;
+    const result = {};
+    for (const key of Reflect.ownKeys(obj)) {
+      const value2 = obj[key];
+      result[key] = deepUnwrap(value2);
+    }
+    return result;
+  }
+  return deepUnwrap(value);
+}
+
+function removeEntryNodes($parent, entry) {
+  for (const node of entry.nodes) {
+    if ($parent.contains(node)) {
+      runComponentCleanup(node);
+      $parent.removeChild(node);
+    }
+  }
+}
+function insertNodes($parent, nodes, referenceNode) {
+  for (const node of nodes) {
+    $parent.insertBefore(node, referenceNode);
+  }
+}
+function reorderEntries($rootNode, $parent, entries, items) {
+  const placeCounts = /* @__PURE__ */ new Map();
+  let ref = $rootNode.nextSibling;
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i];
+    placeCounts.set(item, (placeCounts.get(item) || 0) + 1);
+    let count = 0;
+    const entry = entries.find(
+      (e) => e.item === item && ++count === placeCounts.get(item)
+    );
+    if (!entry) continue;
+    untrack(() => entry.index.value = i);
+    insertNodes($parent, entry.nodes, ref);
+    ref = entry.nodes[entry.nodes.length - 1].nextSibling;
+  }
+}
+function countOccurrences(list) {
+  const counts = /* @__PURE__ */ new Map();
+  for (const item of list) counts.set(item, (counts.get(item) || 0) + 1);
+  return counts;
+}
+function removeOldNodes($parent, items, entries) {
+  const newCounts = countOccurrences(items);
+  const oldCounts = countOccurrences(entries.map((e) => e.item));
+  return entries.filter((entry) => {
+    if ((oldCounts.get(entry.item) ?? 0) > (newCounts.get(entry.item) ?? 0)) {
+      removeEntryNodes($parent, entry);
+      oldCounts.set(entry.item, (oldCounts.get(entry.item) ?? 0) - 1);
+      return false;
+    }
+    return true;
+  });
+}
+function newEntries(items, entries, children, idCounter) {
+  const addedEntries = [];
+  const seenCounts = /* @__PURE__ */ new Map();
+  for (const item of items) {
+    seenCounts.set(item, (seenCounts.get(item) || 0) + 1);
+    const exists = entries.filter((e) => e.item === item).length + addedEntries.filter((e) => e.item === item).length;
+    if (exists < (seenCounts.get(item) || 0)) {
+      const indexState = state(-1);
+      const nodes = toArray(children(item, indexState));
+      addedEntries.push({
+        id: idCounter++,
+        item,
+        nodes,
+        index: indexState
+      });
+    }
+  }
+  return addedEntries;
+}
+
+function loop(items) {
+  return {
+    each: (children) => {
+      return jsx((props) => {
+        const {
+          items: each,
+          children: [children2]
+        } = props;
+        const $rootNode = document.createTextNode("");
+        let entries = [];
+        let idCounter = 0;
+        function reconcile($parent, items2) {
+          entries = removeOldNodes($parent, items2, entries);
+          entries.push(...newEntries(items2, entries, children2, idCounter));
+          reorderEntries($rootNode, $parent, entries, items2);
+        }
+        onMount(() => {
+          effect(() => {
+            const $parent = $rootNode.parentNode;
+            if (!$parent) return;
+            try {
+              const list = each();
+              if (!list) return;
+              reconcile($parent, [...list]);
+            } catch (errorOrPromise) {
+              if (errorOrPromise instanceof Promise) {
+                suspensePromise.value = errorOrPromise;
+              } else {
+                throw errorOrPromise;
+              }
+            }
+          });
+        });
+        onDestroy(() => {
+          for (const entry of entries) {
+            removeEntryNodes($rootNode.parentNode, entry);
+          }
+        });
+        componentRootNodes.add($rootNode);
+        return $rootNode;
+      }, {
+        items: () => items,
+        children
+      });
+    }
+  };
+}
+
+function createRoot($root, App) {
+  renderChildren($root, toArray(App()));
+}
+
+function logJsx($nodes) {
+  const $newNodes = [
+    ...$nodes.filter(
+      ($node) => !($node instanceof Text && componentRootNodes.has($node))
+    )
+  ];
+  return $newNodes.length === 1 ? $newNodes[0] : $newNodes;
+}
+
+export { computed, createRoot, effect, logJsx, loop, memo, onDestroy, onMount, resource, state, store, untrack, unwrap };
 //# sourceMappingURL=index.js.map

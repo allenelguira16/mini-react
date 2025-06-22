@@ -4,27 +4,29 @@ import { mountComponent } from "./mount-component";
 import { MATH_ML_TAGS, SVG_TAGS } from "~/const";
 import { Fragment } from "~/jsx-runtime";
 
-export function h(
-  type: string | Function,
-  props: Record<string, any>,
-  children: JSX.Element[]
-) {
-  try {
-    if (type === Fragment) {
-      return children;
-    }
+/**
+ * create a JSX element
+ *
+ * @param type - The type of the element.
+ * @param props - The properties of the element.
+ * @param children - The children of the element.
+ * @returns The JSX element.
+ */
+export function h(type: string | Function, props: Record<string, any>, children: JSX.Element[]) {
+  if (type === Fragment) {
+    return children;
+  }
 
-    if (typeof type === "function") {
-      return mountComponent(type, props, children);
-    }
+  if (typeof type === "function") {
+    return mountComponent(type, props, children);
+  }
 
-    const $element = createElement(type, props.xmlns);
+  const $element = createElement(type, props.xmlns);
 
-    applyProps($element, props);
-    renderChildren($element, children);
+  applyProps($element, props);
+  renderChildren($element, children);
 
-    return $element;
-  } catch (error) {}
+  return $element;
 }
 
 function createElement(tag: string, namespace?: string) {

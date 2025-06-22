@@ -1,59 +1,54 @@
-import { effect, state } from "~/reactivity";
+import { effect, store } from "~/reactivity";
 
-export function resource<T, A>(fetcher: (...args: A[]) => Promise<T>) {
-  const loading = state(true);
-  const error = state<any>(null);
-  const version = state(0); // trigger reactivity
-  let promise = state<Promise<void>>(); // reactive promise holder
-  let value: T | undefined;
+export function resource<T>(fetcher: () => Promise<T>) {
+  const data = store({
+    loading: true,
+    error: null as any,
+    data: undefined as T,
+  });
+
+  let realPromise: Promise<void> | null = null;
 
   const refetch = () => {
-    loading.value = true;
+    data.loading = true;
 
-    promise.value = new Promise<void>((resolve, reject) => {
+    realPromise = new Promise<void>((resolve, reject) => {
       fetcher()
         .then((result) => {
-          value = result;
-          loading.value = false;
-          error.value = null;
-          version.value++; // trigger dependent effects
+          data.data = result;
+          data.loading = false;
+          data.error = null;
           resolve();
         })
         .catch((err) => {
-          error.value = err;
-          loading.value = false;
-          version.value++; // trigger even on error
+          data.error = err;
+          data.loading = false;
           reject(err);
         });
     });
 
-    return promise.value;
+    return realPromise;
   };
 
-  // Initial fetch immediately
   effect(() => {
     refetch();
   });
 
   return {
-    get value() {
-      version.value; // make value reactive to version
-      const pendingPromise = promise.value;
-
-      if (loading.value) throw pendingPromise;
-      if (error.value) throw error.value;
-      // console.log(pendingPromise, loading.value);
-
-      return value as T;
+    get loading() {
+      return data.loading;
     },
-    loading,
-    error,
+    get error() {
+      return data.error;
+    },
+    get data() {
+      if (data.loading) throw realPromise;
+      if (!data.loading && data.error) throw data.error;
+      return data.data;
+    },
     refetch,
-
-    // ✅ mutate with version bump (trigger effects/reactors)
-    set mutate(newValue: T) {
-      value = newValue;
-      version.value++; // trigger reactivity
+    mutate(newValue: T) {
+      data.data = newValue;
     },
   };
 }

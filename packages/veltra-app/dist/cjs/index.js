@@ -1,2 +1,280 @@
-"use strict";var o=require("./chunks/register-lifecycle-DMfSs4sP.js");function d(n){if(o.mountContext)o.mountContext.push(n);else throw new Error("onMount called outside of component")}function m(n){if(o.destroyContext)o.destroyContext.push(n);else throw new Error("onDestroy called outside of component")}function g(n){const e=o.state();return o.effect(()=>{e.value=n()}),{get value(){return e.value}}}function v(n){const e=o.activeEffect;o.setActiveEffect(null);try{return n()}finally{o.setActiveEffect(e)}}function x(n){const e=o.state(!0),t=o.state(null),f=o.state(0);let i=o.state(),r;const s=()=>(e.value=!0,i.value=new Promise((u,a)=>{n().then(c=>{r=c,e.value=!1,t.value=null,f.value++,u()}).catch(c=>{t.value=c,e.value=!1,f.value++,a(c)})}),i.value);return o.effect(()=>{s()}),{get value(){f.value;const u=i.value;if(e.value)throw u;if(t.value)throw t.value;return r},loading:e,error:t,refetch:s,set mutate(u){r=u,f.value++}}}function w(n,e){o.renderChildren(n,o.toArray(e()))}function h(n,e){for(const t of e.nodes)n.contains(t)&&(o.runComponentCleanup(t),n.removeChild(t))}function y(n,e,t){for(const f of e)n.insertBefore(f,t)}function C(n,e,t,f){const i=new Map;let r=n.nextSibling;for(let s=0;s<f.length;s++){const u=f[s];i.set(u,(i.get(u)||0)+1);let a=0;const c=t.find(l=>l.item===u&&++a===i.get(u));c&&(v(()=>c.index.value=s),y(e,c.nodes,r),r=c.nodes[c.nodes.length-1].nextSibling)}}function p(n){const e=new Map;for(const t of n)e.set(t,(e.get(t)||0)+1);return e}function E(n,e,t){const f=p(e),i=p(t.map(r=>r.item));return t.filter(r=>(i.get(r.item)??0)>(f.get(r.item)??0)?(h(n,r),i.set(r.item,(i.get(r.item)??0)-1),!1):!0)}function N(n,e,t,f){const i=[],r=new Map;for(const s of n)if(r.set(s,(r.get(s)||0)+1),e.filter(u=>u.item===s).length+i.filter(u=>u.item===s).length<(r.get(s)||0)){const u=o.state(-1),a=o.toArray(t(s,u));i.push({id:f++,item:s,nodes:a,index:u})}return i}function M(n){function e(t){const{items:f,children:[i]}=t,r=document.createTextNode("");let s=[],u=0;function a(c,l){s=E(c,l,s),s.push(...N(l,s,i,u)),C(r,c,s,l)}return d(()=>{o.effect(()=>{const c=r.parentNode;if(c)try{a(c,[...f()])}catch(l){if(l instanceof Promise)o.suspensePromise.value=l;else throw l}})}),m(()=>{for(const c of s)h(r.parentNode,c)}),o.componentRootNodes.add(r),r}return{each:t=>o.m(e,{items:()=>n,children:t})}}function R(n){let e,t=!0;return()=>(t&&(e=n(),t=!1),e)}function A(n){const e=[...n.filter(t=>!(t instanceof Text&&o.componentRootNodes.has(t)))];return e.length===1?e[0]:e}exports.Suspense=o.Suspense,exports.effect=o.effect,exports.state=o.state,exports.computed=g,exports.createRoot=w,exports.logJsx=A,exports.loop=M,exports.memo=R,exports.onDestroy=m,exports.onMount=d,exports.resource=x,exports.untrack=v;
+'use strict';
+
+var jsxRuntime = require('./chunks/register-lifecycle-CEfyV6MR.js');
+
+function onMount(fn) {
+  if (jsxRuntime.mountContext) {
+    jsxRuntime.mountContext.push(fn);
+  } else {
+    throw new Error("onMount called outside of component");
+  }
+}
+
+function onDestroy(fn) {
+  if (jsxRuntime.destroyContext) {
+    jsxRuntime.destroyContext.push(fn);
+  } else {
+    throw new Error("onDestroy called outside of component");
+  }
+}
+
+const proxyMap = /* @__PURE__ */ new WeakMap();
+function store(initialObject) {
+  function createReactiveObject(obj) {
+    if (proxyMap.has(obj)) return proxyMap.get(obj);
+    const proxy = new Proxy(obj, {
+      get(target, key, receiver) {
+        jsxRuntime.track(target, key);
+        const result = Reflect.get(target, key, receiver);
+        if (typeof result === "function") {
+          return result.bind(receiver);
+        }
+        const descriptor = Reflect.getOwnPropertyDescriptor(target, key);
+        if (descriptor?.get) {
+          return descriptor.get.call(receiver);
+        }
+        if (typeof result === "object" && result !== null && !(result instanceof Node)) {
+          return createReactiveObject(result);
+        }
+        return result;
+      },
+      set(target, key, value, receiver) {
+        const oldValue = target[key];
+        const result = Reflect.set(target, key, value, receiver);
+        if (oldValue !== value) {
+          jsxRuntime.trigger(target, key);
+        }
+        return result;
+      }
+    });
+    proxyMap.set(obj, proxy);
+    return proxy;
+  }
+  return createReactiveObject(initialObject);
+}
+
+function computed(getter) {
+  const result = jsxRuntime.state();
+  jsxRuntime.effect(() => {
+    result.value = getter();
+  });
+  return {
+    get value() {
+      return result.value;
+    }
+  };
+}
+
+function resource(fetcher) {
+  const data = store({
+    loading: true,
+    error: null,
+    data: void 0
+  });
+  let realPromise = null;
+  const refetch = () => {
+    data.loading = true;
+    realPromise = new Promise((resolve, reject) => {
+      fetcher().then((result) => {
+        data.data = result;
+        data.loading = false;
+        data.error = null;
+        resolve();
+      }).catch((err) => {
+        data.error = err;
+        data.loading = false;
+        reject(err);
+      });
+    });
+    return realPromise;
+  };
+  jsxRuntime.effect(() => {
+    refetch();
+  });
+  return {
+    get loading() {
+      return data.loading;
+    },
+    get error() {
+      return data.error;
+    },
+    get data() {
+      if (data.loading) throw realPromise;
+      if (!data.loading && data.error) throw data.error;
+      return data.data;
+    },
+    refetch,
+    mutate(newValue) {
+      data.data = newValue;
+    }
+  };
+}
+
+function memo(fn) {
+  let cachedResult;
+  let firstRun = true;
+  return () => {
+    if (firstRun) {
+      cachedResult = fn();
+      firstRun = false;
+    }
+    return cachedResult;
+  };
+}
+
+function unwrap(value) {
+  function deepUnwrap(obj) {
+    if (obj === null || typeof obj !== "object") return obj;
+    if (typeof obj === "function") return obj;
+    const result = {};
+    for (const key of Reflect.ownKeys(obj)) {
+      const value2 = obj[key];
+      result[key] = deepUnwrap(value2);
+    }
+    return result;
+  }
+  return deepUnwrap(value);
+}
+
+function removeEntryNodes($parent, entry) {
+  for (const node of entry.nodes) {
+    if ($parent.contains(node)) {
+      jsxRuntime.runComponentCleanup(node);
+      $parent.removeChild(node);
+    }
+  }
+}
+function insertNodes($parent, nodes, referenceNode) {
+  for (const node of nodes) {
+    $parent.insertBefore(node, referenceNode);
+  }
+}
+function reorderEntries($rootNode, $parent, entries, items) {
+  const placeCounts = /* @__PURE__ */ new Map();
+  let ref = $rootNode.nextSibling;
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i];
+    placeCounts.set(item, (placeCounts.get(item) || 0) + 1);
+    let count = 0;
+    const entry = entries.find(
+      (e) => e.item === item && ++count === placeCounts.get(item)
+    );
+    if (!entry) continue;
+    jsxRuntime.untrack(() => entry.index.value = i);
+    insertNodes($parent, entry.nodes, ref);
+    ref = entry.nodes[entry.nodes.length - 1].nextSibling;
+  }
+}
+function countOccurrences(list) {
+  const counts = /* @__PURE__ */ new Map();
+  for (const item of list) counts.set(item, (counts.get(item) || 0) + 1);
+  return counts;
+}
+function removeOldNodes($parent, items, entries) {
+  const newCounts = countOccurrences(items);
+  const oldCounts = countOccurrences(entries.map((e) => e.item));
+  return entries.filter((entry) => {
+    if ((oldCounts.get(entry.item) ?? 0) > (newCounts.get(entry.item) ?? 0)) {
+      removeEntryNodes($parent, entry);
+      oldCounts.set(entry.item, (oldCounts.get(entry.item) ?? 0) - 1);
+      return false;
+    }
+    return true;
+  });
+}
+function newEntries(items, entries, children, idCounter) {
+  const addedEntries = [];
+  const seenCounts = /* @__PURE__ */ new Map();
+  for (const item of items) {
+    seenCounts.set(item, (seenCounts.get(item) || 0) + 1);
+    const exists = entries.filter((e) => e.item === item).length + addedEntries.filter((e) => e.item === item).length;
+    if (exists < (seenCounts.get(item) || 0)) {
+      const indexState = jsxRuntime.state(-1);
+      const nodes = jsxRuntime.toArray(children(item, indexState));
+      addedEntries.push({
+        id: idCounter++,
+        item,
+        nodes,
+        index: indexState
+      });
+    }
+  }
+  return addedEntries;
+}
+
+function loop(items) {
+  return {
+    each: (children) => {
+      return jsxRuntime.jsx((props) => {
+        const {
+          items: each,
+          children: [children2]
+        } = props;
+        const $rootNode = document.createTextNode("");
+        let entries = [];
+        let idCounter = 0;
+        function reconcile($parent, items2) {
+          entries = removeOldNodes($parent, items2, entries);
+          entries.push(...newEntries(items2, entries, children2, idCounter));
+          reorderEntries($rootNode, $parent, entries, items2);
+        }
+        onMount(() => {
+          jsxRuntime.effect(() => {
+            const $parent = $rootNode.parentNode;
+            if (!$parent) return;
+            try {
+              const list = each();
+              if (!list) return;
+              reconcile($parent, [...list]);
+            } catch (errorOrPromise) {
+              if (errorOrPromise instanceof Promise) {
+                jsxRuntime.suspensePromise.value = errorOrPromise;
+              } else {
+                throw errorOrPromise;
+              }
+            }
+          });
+        });
+        onDestroy(() => {
+          for (const entry of entries) {
+            removeEntryNodes($rootNode.parentNode, entry);
+          }
+        });
+        jsxRuntime.componentRootNodes.add($rootNode);
+        return $rootNode;
+      }, {
+        items: () => items,
+        children
+      });
+    }
+  };
+}
+
+function createRoot($root, App) {
+  jsxRuntime.renderChildren($root, jsxRuntime.toArray(App()));
+}
+
+function logJsx($nodes) {
+  const $newNodes = [
+    ...$nodes.filter(
+      ($node) => !($node instanceof Text && jsxRuntime.componentRootNodes.has($node))
+    )
+  ];
+  return $newNodes.length === 1 ? $newNodes[0] : $newNodes;
+}
+
+exports.Suspense = jsxRuntime.Suspense;
+exports.effect = jsxRuntime.effect;
+exports.state = jsxRuntime.state;
+exports.untrack = jsxRuntime.untrack;
+exports.computed = computed;
+exports.createRoot = createRoot;
+exports.logJsx = logJsx;
+exports.loop = loop;
+exports.memo = memo;
+exports.onDestroy = onDestroy;
+exports.onMount = onMount;
+exports.resource = resource;
+exports.store = store;
+exports.unwrap = unwrap;
 //# sourceMappingURL=index.js.map

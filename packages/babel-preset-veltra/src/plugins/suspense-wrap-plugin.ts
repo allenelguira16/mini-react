@@ -44,11 +44,7 @@ export const suspenseWrapPlugin = declare((api) => {
 
               // Wrap original children in a Fragment inside an ExpressionContainer
               const wrappedExpression = t.jSXExpressionContainer(
-                t.jSXFragment(
-                  t.jSXOpeningFragment(),
-                  t.jSXClosingFragment(),
-                  children
-                )
+                t.jSXFragment(t.jSXOpeningFragment(), t.jSXClosingFragment(), children),
               );
 
               // Replace all children with single wrapped fragment

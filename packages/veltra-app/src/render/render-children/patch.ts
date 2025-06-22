@@ -1,11 +1,19 @@
 import { isNil } from "~/util";
-import { runComponentCleanup } from "../life-cycle";
+import { runComponentCleanup } from "~/life-cycle";
 
+/**
+ * patch the old nodes with the new nodes
+ *
+ * @param $parent - The parent node.
+ * @param $oldNodes - The old nodes.
+ * @param $newNodes - The new nodes.
+ * @param isFirstRender - Whether it is the first render.
+ */
 export function patch(
   $parent: Node,
   $oldNodes: Node[],
   $newNodes: (Node | undefined)[],
-  isFirstRender: boolean
+  isFirstRender: boolean,
 ) {
   const maxLength = Math.max($oldNodes.length, $newNodes.length);
 
