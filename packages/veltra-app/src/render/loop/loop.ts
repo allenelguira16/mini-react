@@ -35,30 +35,30 @@ export function loop<T>(items: T[]) {
             children: [children],
           } = props;
 
-          const $rootNode = document.createTextNode("");
+          const rootNode = document.createTextNode("");
 
           let entries: Entry<T>[] = [];
           const idCounter = 0;
 
-          function reconcile($parent: Node, items: T[]) {
+          function reconcile(parentNode: Node, items: T[]) {
             // Remove extra
-            entries = removeOldNodes($parent, items, entries);
+            entries = removeOldNodes(parentNode, items, entries);
             // Add new
             entries.push(...newEntries(items, entries, children, idCounter));
 
-            reorderEntries($rootNode, $parent, entries, items);
+            reorderEntries(rootNode, parentNode, entries, items);
           }
 
           onMount(() => {
             effect(() => {
-              const $parent = $rootNode.parentNode;
-              if (!$parent) return;
+              const parentNode = rootNode.parentNode;
+              if (!parentNode) return;
 
               try {
                 const list = each();
                 if (!list) return;
 
-                reconcile($parent, [...list]);
+                reconcile(parentNode, [...list]);
               } catch (errorOrPromise) {
                 if (errorOrPromise instanceof Promise) {
                   suspensePromise.value = errorOrPromise;
@@ -71,12 +71,12 @@ export function loop<T>(items: T[]) {
 
           onDestroy(() => {
             for (const entry of entries) {
-              removeEntryNodes($rootNode.parentNode!, entry);
+              removeEntryNodes(rootNode.parentNode!, entry);
             }
           });
 
-          componentRootNodes.add($rootNode);
-          return $rootNode;
+          componentRootNodes.add(rootNode);
+          return rootNode;
         },
         {
           items: () => items,

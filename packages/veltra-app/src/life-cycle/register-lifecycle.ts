@@ -12,14 +12,14 @@ export type LifecycleContext = {
   destroy: DestroyFn[];
 };
 
-export function registerLifeCycles(context: LifecycleContext, $target: Node) {
+export function registerLifeCycles(context: LifecycleContext, targetNode: Node) {
   const cleanups: (() => void)[] = [];
 
   setMountContext(null);
   setEffectContext(null);
   setDestroyContext(null);
 
-  registerComponentCleanup($target, cleanups);
+  registerComponentCleanup(targetNode, cleanups);
 
   // Pass cleanups once dom is painted
   queueMicrotask(() => {
@@ -33,5 +33,5 @@ export function registerLifeCycles(context: LifecycleContext, $target: Node) {
   // Re-run effect and memo when node is reattached
   onNodeReattached(() => {
     cleanups.push(...context.mount.map((fn) => fn()).filter((c) => !!c));
-  }, $target);
+  }, targetNode);
 }

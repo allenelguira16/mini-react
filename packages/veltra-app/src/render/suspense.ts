@@ -12,8 +12,8 @@ export const suspensePromise = state<Promise<void> | null>(null);
  * @returns The suspense component.
  */
 export function Suspense(props: { fallback: JSX.Element; children: JSX.Element }) {
-  const $rootNode = document.createTextNode("");
-  let $parent: Node;
+  const rootNode = document.createTextNode("");
+  let parentNode: Node;
 
   // Change types since this is transformed by babel
   const {
@@ -27,24 +27,24 @@ export function Suspense(props: { fallback: JSX.Element; children: JSX.Element }
   const fallback = _fallback() as Node;
 
   let isFirstRender = true;
-  let $oldNodes: Node[] = [];
+  let oldNodes: Node[] = [];
 
   const renderFallback = () => {
-    $oldNodes = patch($parent, $oldNodes, getNodes(fallback), isFirstRender);
+    oldNodes = patch(parentNode, oldNodes, getNodes(fallback), isFirstRender);
     isFirstRender = false;
   };
 
   const renderSuspenseChildren = () => {
-    const $newNodes = getNodes(children()).flat() as Node[];
-    $oldNodes = patch($parent, $oldNodes, $newNodes, isFirstRender);
+    const newNodes = getNodes(children()).flat() as Node[];
+    oldNodes = patch(parentNode, oldNodes, newNodes, isFirstRender);
   };
 
   queueMicrotask(() => {
-    $parent = $rootNode.parentNode as Node;
+    parentNode = rootNode.parentNode as Node;
 
     effect(() => {
       try {
-        if (!$parent) return;
+        if (!parentNode) return;
         renderFallback();
 
         if (suspensePromise.value) throw suspensePromise.value;
@@ -66,7 +66,7 @@ export function Suspense(props: { fallback: JSX.Element; children: JSX.Element }
   });
 
   // initial render is fallback node
-  return $rootNode;
+  return rootNode;
 }
 
 const getNodes = <T extends JSX.Element | Node>(items: T) => {

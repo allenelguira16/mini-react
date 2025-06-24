@@ -7,14 +7,14 @@ import { Entry } from "./loop";
 /**
  * remove the entry nodes
  *
- * @param $parent - The parent node.
+ * @param parentNode - The parent node.
  * @param entry - The entry to remove.
  */
-export function removeEntryNodes<T>($parent: Node, entry: Entry<T>) {
+export function removeEntryNodes<T>(parentNode: Node, entry: Entry<T>) {
   for (const node of entry.nodes) {
-    if ($parent.contains(node)) {
+    if (parentNode.contains(node)) {
       runComponentCleanup(node);
-      $parent.removeChild(node);
+      parentNode.removeChild(node);
     }
   }
 }
@@ -22,27 +22,32 @@ export function removeEntryNodes<T>($parent: Node, entry: Entry<T>) {
 /**
  * insert the nodes
  *
- * @param $parent - The parent node.
+ * @param parentNode - The parent node.
  * @param nodes - The nodes to insert.
  * @param referenceNode - The reference node.
  */
-export function insertNodes($parent: Node, nodes: Node[], referenceNode: Node | null) {
+export function insertNodes(parentNode: Node, nodes: Node[], referenceNode: Node | null) {
   for (const node of nodes) {
-    $parent.insertBefore(node, referenceNode);
+    parentNode.insertBefore(node, referenceNode);
   }
 }
 
 /**
  * reorder the entries
  *
- * @param $rootNode - The root node.
- * @param $parent - The parent node.
+ * @param rootNode - The root node.
+ * @param parentNode - The parent node.
  * @param entries - The entries to reorder.
  * @param items - The items to reorder.
  */
-export function reorderEntries<T>($rootNode: Node, $parent: Node, entries: Entry<T>[], items: T[]) {
+export function reorderEntries<T>(
+  rootNode: Node,
+  parentNode: Node,
+  entries: Entry<T>[],
+  items: T[],
+) {
   const placeCounts = new Map<T, number>();
-  let ref: Node | null = $rootNode.nextSibling;
+  let ref: Node | null = rootNode.nextSibling;
 
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
@@ -51,7 +56,7 @@ export function reorderEntries<T>($rootNode: Node, $parent: Node, entries: Entry
     const entry = entries.find((e) => e.item === item && ++count === placeCounts.get(item));
     if (!entry) continue;
     untrack(() => (entry.index.value = i));
-    insertNodes($parent, entry.nodes, ref);
+    insertNodes(parentNode, entry.nodes, ref);
     ref = entry.nodes[entry.nodes.length - 1].nextSibling;
   }
 }
@@ -71,17 +76,17 @@ export function countOccurrences<T>(list: T[]) {
 /**
  * remove the old nodes
  *
- * @param $parent - The parent node.
+ * @param parentNode - The parent node.
  * @param items - The items to remove.
  * @param entries - The entries to remove.
  */
-export function removeOldNodes<T>($parent: Node, items: T[], entries: Entry<T>[]) {
+export function removeOldNodes<T>(parentNode: Node, items: T[], entries: Entry<T>[]) {
   const newCounts = countOccurrences(items);
   const oldCounts = countOccurrences(entries.map((e) => e.item));
 
   return entries.filter((entry) => {
     if ((oldCounts.get(entry.item) ?? 0) > (newCounts.get(entry.item) ?? 0)) {
-      removeEntryNodes($parent, entry);
+      removeEntryNodes(parentNode, entry);
       oldCounts.set(entry.item, (oldCounts.get(entry.item) ?? 0) - 1);
       return false;
     }

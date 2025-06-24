@@ -5,10 +5,10 @@ import { effect as reactor } from "../reactivity";
 /**
  * apply the properties to the element
  *
- * @param $element - The element to apply the properties to.
+ * @param element - The element to apply the properties to.
  * @param props - The properties to apply.
  */
-export function applyProps($element: HTMLElement | Element, props: Record<string, any>) {
+export function applyProps(element: HTMLElement | Element, props: Record<string, any>) {
   for (const key in props) {
     if (key.startsWith("on") && typeof props[key] === "function") {
       const type = key.slice(2).toLowerCase();
@@ -20,9 +20,9 @@ export function applyProps($element: HTMLElement | Element, props: Record<string
 
         const fn = props[key]();
         if (typeof fn === "function") {
-          $element.addEventListener(type, fn);
+          element.addEventListener(type, fn);
           // Setup cleanup for next effect run
-          cleanup = () => $element.removeEventListener(type, fn);
+          cleanup = () => element.removeEventListener(type, fn);
         }
       });
     } else {
@@ -30,13 +30,13 @@ export function applyProps($element: HTMLElement | Element, props: Record<string
         const value = typeof props[key] === "function" ? props[key]() : props[key];
 
         if (key === "ref" && typeof value === "function") {
-          value($element);
+          value(element);
         } else if (key === "style") {
-          applyStyle($element, value);
+          applyStyle(element, value);
         } else if (key === "disabled") {
-          $element.toggleAttribute(key, value);
+          element.toggleAttribute(key, value);
         } else {
-          $element.setAttribute(key, value);
+          element.setAttribute(key, value);
         }
       });
     }
@@ -46,11 +46,11 @@ export function applyProps($element: HTMLElement | Element, props: Record<string
 /**
  * apply the style to the element
  *
- * @param $element - The element to apply the style to.
+ * @param element - The element to apply the style to.
  * @param style - The style to apply.
  */
-function applyStyle($element: HTMLElement | Element, style: Record<string, any>) {
-  if (!($element instanceof HTMLElement)) return;
+function applyStyle(element: HTMLElement | Element, style: Record<string, any>) {
+  if (!(element instanceof HTMLElement)) return;
 
   for (const [key, value] of Object.entries(style)) {
     const cssKey = key as keyof CSSStyleDeclaration;
@@ -60,7 +60,7 @@ function applyStyle($element: HTMLElement | Element, style: Record<string, any>)
     const needsUnit = isNumber && !isUnitLessCSSProperty(key);
     const finalValue = needsUnit ? `${value}px` : String(value);
 
-    $element.style.setProperty(String(cssKey), finalValue);
+    element.style.setProperty(String(cssKey), finalValue);
   }
 }
 

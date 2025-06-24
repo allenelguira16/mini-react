@@ -6,34 +6,34 @@ import { suspenseReactor } from "./suspense-effect";
 /**
  * render the children
  *
- * @param $parent - The parent node.
+ * @param parentNode - The parent node.
  * @param children - The children to render.
  * @param index - The index to insert the children at.
  */
-export function renderChildren($parent: Node, children: JSX.Element[], index?: number) {
+export function renderChildren(parentNode: Node, children: JSX.Element[], index?: number) {
   let insertBeforeNode: ChildNode | null = null;
 
   if (index !== undefined) {
-    insertBeforeNode = $parent.childNodes[index] as ChildNode;
+    insertBeforeNode = parentNode.childNodes[index] as ChildNode;
   }
 
-  for (const $child of children) {
-    if (typeof $child === "function") {
-      let $oldNodes: Node[] = [];
+  for (const childNode of children) {
+    if (typeof childNode === "function") {
+      let oldNodes: Node[] = [];
       let isFirstRender = true;
 
       suspenseReactor(() => {
-        const $newNodes = toArray($child()).map(getNode).flat();
-        $oldNodes = patch($parent, $oldNodes, $newNodes, isFirstRender);
+        const newNodes = toArray(childNode()).map(getNode).flat();
+        oldNodes = patch(parentNode, oldNodes, newNodes, isFirstRender);
         isFirstRender = false;
       });
     } else {
-      const $node = getNode($child);
-      if (!Array.isArray($node) && $node) {
+      const node = getNode(childNode);
+      if (!Array.isArray(node) && node) {
         if (insertBeforeNode) {
-          $parent.insertBefore($node, insertBeforeNode);
+          parentNode.insertBefore(node, insertBeforeNode);
         } else {
-          $parent.appendChild($node);
+          parentNode.appendChild(node);
         }
       }
     }

@@ -11,7 +11,7 @@ import { toArray } from "./util";
  * @returns The JSX element.
  */
 const jsx = (
-  type: string | ((props: Record<string, any>) => any),
+  type: string | ((props: any) => any),
   { children = [], ...props }: Record<string, any>,
 ) => {
   if (IS_SSR) {

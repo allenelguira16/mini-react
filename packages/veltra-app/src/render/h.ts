@@ -26,12 +26,12 @@ export function h(
     return mountComponent(type, props, children);
   }
 
-  const $element = createElement(type, props.xmlns);
+  const element = createElement(type, props.xmlns);
 
-  applyProps($element, props);
-  renderChildren($element, children);
+  applyProps(element, props);
+  renderChildren(element, children);
 
-  return $element;
+  return element;
 }
 
 function createElement(tag: string, namespace?: string) {

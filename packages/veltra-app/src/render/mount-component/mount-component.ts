@@ -27,16 +27,16 @@ export function mountComponent(
 
   initializeLifecycleContext(lifecycleContext);
 
-  const $node = untrack(() => type({ ...props, children }));
-  let $target = $node;
+  const node = untrack(() => type({ ...props, children }));
+  let targetNode = node;
 
-  if (Array.isArray($node)) {
-    $target = document.createTextNode("");
-    $node.unshift($target);
+  if (Array.isArray(node)) {
+    targetNode = document.createTextNode("");
+    node.unshift(targetNode);
   }
 
-  registerLifeCycles(lifecycleContext, $target);
+  registerLifeCycles(lifecycleContext, targetNode);
 
-  componentRootNodes.add($target);
-  return $node;
+  componentRootNodes.add(targetNode);
+  return node;
 }
