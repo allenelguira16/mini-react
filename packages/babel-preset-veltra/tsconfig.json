@@ -28,6 +28,6 @@
     "isolatedModules": true,
     "moduleDetection": "force"
   },
-  "include": ["./src"],
-  "exclude": ["./dist"]
+  "include": ["src"],
+  "exclude": ["dist"]
 }

@@ -1,14 +1,25 @@
 import tailwindcss from "@tailwindcss/vite";
-import { defineConfig } from "vite";
+import { defineConfig, Plugin } from "vite";
 import sitemap from "vite-plugin-sitemap";
-import veltraPlugin from "vite-plugin-veltra";
 import tsconfigPaths from "vite-tsconfig-paths";
 
-export default defineConfig({
-  plugins: [
-    tsconfigPaths(),
-    veltraPlugin(),
-    tailwindcss(),
-    sitemap({ hostname: "http://localhost:4173/" }),
-  ],
+export default defineConfig(async ({ mode }) => {
+  let veltraPlugin: () => Plugin;
+
+  if (mode === "development") {
+    veltraPlugin = (await import("../../packages/vite-plugin-veltra/src/index.ts")).default;
+  } else if (mode === "production") {
+    veltraPlugin = (await import("vite-plugin-veltra")).default;
+  } else {
+    throw new Error(`Unknown mode: ${mode}`);
+  }
+
+  return {
+    plugins: [
+      tsconfigPaths(),
+      veltraPlugin(),
+      tailwindcss(),
+      sitemap({ hostname: "http://localhost:4173/" }),
+    ],
+  };
 });

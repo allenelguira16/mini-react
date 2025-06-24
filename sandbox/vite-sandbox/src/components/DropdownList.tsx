@@ -60,6 +60,14 @@ const DropdownList = ({ dropdowns }: { dropdowns: typeof dropdownStore }) => {
   });
   console.log("only log once");
 
+  onMount(() => {
+    console.log("DropdownList logs onMount");
+  });
+
+  onDestroy(() => {
+    console.log("DropdownList logs when destroying");
+  });
+
   const Render = loop(doubledNumbers.value).each((number) => <Dropdown number={number} />);
 
   return (

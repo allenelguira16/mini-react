@@ -51,6 +51,7 @@ export default defineConfig([
     output: {
       dir: "dist/types",
       format: "es",
+      paths: undefined,
     },
     plugins: [dts()],
   },

@@ -5,7 +5,7 @@
     "useDefineForClassFields": true,
     "module": "ESNext",
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "jsxImportSource": "@veltra/app",
 
     "skipLibCheck": true,
@@ -22,13 +22,14 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "noUncheckedSideEffectImports": true,
 
-    // "paths": {
-    //   "@mini/app": ["../app/src"],
-    //   "@mini/vite": ["../vite/src"],
-    //   "@mini/app/jsx-runtime": ["../app/src/jsx-runtime"]
-    // }
+    "paths": {
+      "@veltra/app": ["../../packages/veltra-app/src"],
+      "@veltra/router": ["../../packages/veltra-router/src"],
+      "@veltra/app/jsx-runtime": ["../../packages/veltra-app/src/jsx-runtime.ts"],
+      "vite-plugin-veltra": ["../../packages/vite-plugin-veltra/src"]
+    }
   },
-  "include": ["src"]
+  "include": ["src", "./vite.config.ts"]
 }

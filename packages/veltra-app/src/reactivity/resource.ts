@@ -1,6 +1,14 @@
 import { effect, store } from "~/reactivity";
 
-export function resource<T>(fetcher: () => Promise<T>) {
+export type ResourceReturn<T> = {
+  readonly loading: boolean;
+  readonly error: Error | null;
+  readonly data: T;
+  refetch: () => Promise<void>;
+  mutate: (newValue: T) => void;
+};
+
+export function resource<T>(fetcher: () => Promise<T>): ResourceReturn<T> {
   const data = store({
     loading: true,
     error: null as Error | null,

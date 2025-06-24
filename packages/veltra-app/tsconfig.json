@@ -14,7 +14,7 @@
     "esModuleInterop": true,
     "importHelpers": true,
     "jsx": "preserve",
-    "jsxImportSource": "@veltra/app",
+    "jsxImportSource": "./src",
     "allowImportingTsExtensions": true,
     "composite": true,
 
@@ -34,6 +34,6 @@
       "~/*": ["./src/*"]
     }
   },
-  "include": ["./src"],
-  "exclude": ["./dist"]
+  "include": ["src/jsx.d.ts", "src"],
+  "exclude": ["dist"]
 }

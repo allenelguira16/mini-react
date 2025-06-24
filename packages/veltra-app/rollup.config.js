@@ -1,7 +1,7 @@
 import { defineConfig } from "rollup";
+import del from "rollup-plugin-delete";
 import dts from "rollup-plugin-dts";
 import esbuild from "rollup-plugin-esbuild";
-import del from "rollup-plugin-delete";
 import tsConfigPaths from "rollup-plugin-tsconfig-paths";
 
 const { default: pkg } = await import("./package.json", {
@@ -50,6 +50,7 @@ export default defineConfig([
     output: {
       dir: "dist/types",
       format: "es",
+      paths: undefined,
     },
     plugins: [tsConfigPaths(), dts()],
   },

@@ -7,13 +7,14 @@ declare function computed<T>(getter: () => T): Computed<T>;
 
 declare function effect(fn: () => void): () => void;
 
-declare function resource<T>(fetcher: () => Promise<T>): {
+type ResourceReturn<T> = {
     readonly loading: boolean;
     readonly error: Error | null;
     readonly data: T;
     refetch: () => Promise<void>;
-    mutate(newValue: T): void;
+    mutate: (newValue: T) => void;
 };
+declare function resource<T>(fetcher: () => Promise<T>): ResourceReturn<T>;
 
 type State<T> = {
     value: T;

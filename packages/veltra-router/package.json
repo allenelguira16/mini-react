@@ -7,9 +7,9 @@
   "types": "dist/types/index.d.ts",
   "sideEffects": false,
   "scripts": {
-    "dev": "NODE_ENV=development && rollup -c -w",
-    "build": "NODE_ENV=production && rollup -c",
-    "prepare": "NODE_ENV=development && rollup -c",
+    "dev": "NODE_ENV=development rollup -c -w",
+    "build": "NODE_ENV=production rollup -c",
+    "prepare": "NODE_ENV=development rollup -c",
     "clean": "rimraf dist"
   },
   "files": [
@@ -17,8 +17,11 @@
   ],
   "exports": {
     ".": {
+      "import": {
+        "development": "./src/index.tsx",
+        "default": "./dist/esm/index.js"
+      },
       "require": "./dist/cjs/index.js",
-      "import": "./dist/esm/index.js",
       "types": "./dist/types/index.d.ts"
     },
     "./package.json": "./package.json"

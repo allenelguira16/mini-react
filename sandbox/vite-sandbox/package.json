@@ -4,10 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "stats": "yarn vite-bundle-visualizer -o stats.html"
+    "dev": "NODE_ENV=development vite",
+    "build": "NODE_ENV=production vite build",
+    "preview": "NODE_ENV=production vite build && production vite preview",
+    "stats": "NODE_ENV=production vite-bundle-visualizer -o stats.html"
   },
   "devDependencies": {
     "@types/lodash": "^4.17.17",
@@ -22,6 +22,7 @@
     "@tailwindcss/vite": "^4.1.8",
     "@veltra/app": "workspace:^",
     "@veltra/router": "workspace:^",
+    "cross-env": "^7.0.3",
     "lodash": "^4.17.21",
     "tailwindcss": "^4.1.8",
     "vite-bundle-visualizer": "^1.2.1",

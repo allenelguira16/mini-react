@@ -1,3 +1,5 @@
+export {};
+
 // TODO: add specific types not just any
 declare global {
   namespace JSX {

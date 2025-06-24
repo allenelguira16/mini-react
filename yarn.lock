@@ -56,7 +56,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@babel/generator@npm:^7.27.3":
+"@babel/generator@npm:^7.27.3, @babel/generator@npm:^7.27.5":
   version: 7.27.5
   resolution: "@babel/generator@npm:7.27.5"
   dependencies:
@@ -356,15 +356,21 @@ __metadata:
   resolution: "@babel/preset-veltra@workspace:packages/babel-preset-veltra"
   dependencies:
     "@babel/core": "npm:^7.27.4"
+    "@babel/generator": "npm:^7.27.5"
     "@babel/helper-plugin-utils": "npm:^7.27.1"
     "@babel/preset-react": "npm:^7.27.1"
+    "@babel/template": "npm:^7.27.2"
+    "@babel/traverse": "npm:^7.27.4"
     "@babel/types": "npm:^7.27.3"
     "@rollup/plugin-commonjs": "npm:^28.0.3"
     "@rollup/plugin-json": "npm:^6.1.0"
     "@rollup/plugin-node-resolve": "npm:^16.0.1"
     "@rollup/plugin-typescript": "npm:^12.1.2"
     "@types/babel__core": "npm:^7.20.5"
+    "@types/babel__generator": "npm:^7"
     "@types/babel__helper-plugin-utils": "npm:^7.10.3"
+    "@types/babel__template": "npm:^7"
+    "@types/babel__traverse": "npm:^7"
     "@types/rollup-plugin-delete": "npm:^1.0.0"
     esbuild: "npm:^0.25.5"
     rimraf: "npm:^6.0.1"
@@ -1326,7 +1332,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/babel__generator@npm:*":
+"@types/babel__generator@npm:*, @types/babel__generator@npm:^7":
   version: 7.27.0
   resolution: "@types/babel__generator@npm:7.27.0"
   dependencies:
@@ -1344,7 +1350,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/babel__template@npm:*":
+"@types/babel__template@npm:*, @types/babel__template@npm:^7":
   version: 7.4.4
   resolution: "@types/babel__template@npm:7.4.4"
   dependencies:
@@ -1354,7 +1360,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/babel__traverse@npm:*":
+"@types/babel__traverse@npm:*, @types/babel__traverse@npm:^7":
   version: 7.20.7
   resolution: "@types/babel__traverse@npm:7.20.7"
   dependencies:
@@ -2170,7 +2176,19 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cross-spawn@npm:^7.0.6":
+"cross-env@npm:^7.0.3":
+  version: 7.0.3
+  resolution: "cross-env@npm:7.0.3"
+  dependencies:
+    cross-spawn: "npm:^7.0.1"
+  bin:
+    cross-env: src/bin/cross-env.js
+    cross-env-shell: src/bin/cross-env-shell.js
+  checksum: 10c0/f3765c25746c69fcca369655c442c6c886e54ccf3ab8c16847d5ad0e91e2f337d36eedc6599c1227904bf2a228d721e690324446876115bc8e7b32a866735ecf
+  languageName: node
+  linkType: hard
+
+"cross-spawn@npm:^7.0.1, cross-spawn@npm:^7.0.6":
   version: 7.0.6
   resolution: "cross-spawn@npm:7.0.6"
   dependencies:
@@ -6034,6 +6052,7 @@ __metadata:
     "@types/node": "npm:^22.15.21"
     "@veltra/app": "workspace:^"
     "@veltra/router": "workspace:^"
+    cross-env: "npm:^7.0.3"
     lodash: "npm:^4.17.21"
     tailwindcss: "npm:^4.1.8"
     typescript: "npm:^5.8.3"

@@ -1,8 +1,9 @@
 import { transformAsync } from "@babel/core";
 // @ts-expect-error - babel-preset-typescript is not typed
 import babelPluginTS from "@babel/preset-typescript";
-import babelPluginVeltra from "@babel/preset-veltra";
 import type { Plugin } from "vite";
+
+import babelPluginVeltra from "../../babel-preset-veltra/src/index.ts";
 
 const vitePlugin = (): Plugin => {
   return {

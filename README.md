@@ -308,7 +308,7 @@ Use .map only if purely representational, if it needs cache like it looping thro
 With `loop` helper, it is efficient and cache's DOM elements properly.
 
 ```tsx
-import { For, effect, state, createRoot } from "@veltra/app";
+import { effect, state, createRoot } from "@veltra/app";
 
 type SortDirection = "asc" | "desc";
 
@@ -405,7 +405,7 @@ function Counter() {
 
   return (
     <div>
-      <div>Msg: {msg.value}</div>
+      <div>Msg: {msg.data}</div>
     </div>
   );
 }
@@ -432,7 +432,7 @@ function Counter() {
     <div>
       <div>
         Msg:
-        <Suspense fallback={<>loading message...</>}>{msg.value}</Suspense>
+        <Suspense fallback={<>loading message...</>}>{msg.data}</Suspense>
       </div>
     </div>
   );

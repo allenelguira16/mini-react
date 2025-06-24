@@ -1,3 +1,5 @@
+import type {} from "./jsx.d.ts";
+
 export { type DestroyFn, type MountFn, onDestroy, onMount } from "./life-cycle";
 export {
   type Computed,
