@@ -17,13 +17,14 @@ export function h(
   type: string | ((props: Record<string, any>) => any),
   props: Record<string, any>,
   children: JSX.Element[],
+  key?: () => string,
 ) {
   if (type === Fragment) {
     return children;
   }
 
   if (typeof type === "function") {
-    return mountComponent(type, props, children);
+    return mountComponent(type, { key, ...props }, children);
   }
 
   const element = createElement(type, props.xmlns);
@@ -36,7 +37,7 @@ export function h(
 
 function createElement(tag: string, namespace?: string) {
   if ((SVG_TAGS.has(tag) || MATH_ML_TAGS.has(tag)) && namespace) {
-    return document.createElementNS(namespace, tag);
+    return document.createElementNS(namespace, tag) as HTMLElement;
   }
 
   return document.createElement(tag);

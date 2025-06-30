@@ -7,6 +7,12 @@ type Metadata = {
   localLoops: Set<string>;
 };
 
+/**
+ * babel plugin to auto wrap loops
+ *
+ * @param api - The babel api.
+ * @returns The babel options.
+ */
 export const loopAutoWrapPlugin = declare((api) => {
   api.assertVersion(7);
   return {

@@ -17,6 +17,40 @@ type SortKey = keyof PokeDexData["results"][number];
 type SortDirection = "asc" | "desc";
 
 export const PokeDex = () => {
+  const pokeDex = store({
+    isLoading: true,
+    pokeDexList: [] as PokeDexData["results"],
+    prevLink: "" as PokeDexData["previous"],
+    nextLink: "" as PokeDexData["next"],
+    sortDirection: "asc" as SortDirection,
+    async fetchData(url: string | null) {
+      if (!url) return;
+
+      this.isLoading = true;
+
+      const response = await fetch(url);
+      const json = (await response.json()) as PokeDexData;
+
+      await sleep(500);
+
+      this.pokeDexList = json.results;
+      this.prevLink = json.previous?.replace(/limit=\d+/, "limit=20") ?? "";
+      this.nextLink = json.next?.replace(/limit=\d+/, "limit=20") ?? "";
+      this.isLoading = false;
+    },
+    handleSort(key: SortKey) {
+      this.sortDirection = this.sortDirection === "asc" ? "desc" : "asc";
+      this.pokeDexList = [...this.pokeDexList].sort((a, b) => {
+        const cmp = a[key].localeCompare(b[key]);
+        return this.sortDirection === "asc" ? cmp : -cmp;
+      });
+    },
+  });
+
+  effect(async () => {
+    await pokeDex.fetchData("https://pokeapi.co/api/v2/pokemon/?offset=1100&limit=20");
+  });
+
   return (
     <>
       <div class="break-all">Hi {name.firstName}</div>
@@ -34,15 +68,13 @@ export const PokeDex = () => {
         </thead>
         <tbody>
           {pokeDex.isLoading &&
-            Array.from({ length: 20 })
-              .map((_, i) => i + 1)
-              .map((number) => (
-                <tr>
-                  <td colspan="3" class="h-[24px] text-center">
-                    {number === 10 && "loading..."}
-                  </td>
-                </tr>
-              ))}
+            loop(Array.from({ length: 20 }).map((_, i) => i + 1)).each((number) => (
+              <tr>
+                <td colspan="3" class="h-[24px] text-center">
+                  {number === 10 && "loading..."}
+                </td>
+              </tr>
+            ))}
           {!pokeDex.isLoading &&
             loop(pokeDex.pokeDexList).each(({ name, url }, index) => (
               <tr>
@@ -74,37 +106,3 @@ export const PokeDex = () => {
     </>
   );
 };
-
-const pokeDex = store({
-  isLoading: true,
-  pokeDexList: [] as PokeDexData["results"],
-  prevLink: "" as PokeDexData["previous"],
-  nextLink: "" as PokeDexData["next"],
-  sortDirection: "asc" as SortDirection,
-  async fetchData(url: string | null) {
-    if (!url) return;
-
-    this.isLoading = true;
-
-    const response = await fetch(url);
-    const json = (await response.json()) as PokeDexData;
-
-    await sleep(500);
-
-    this.pokeDexList = json.results;
-    this.prevLink = json.previous?.replace(/limit=\d+/, "limit=20") ?? "";
-    this.nextLink = json.next?.replace(/limit=\d+/, "limit=20") ?? "";
-    this.isLoading = false;
-  },
-  handleSort(key: SortKey) {
-    this.sortDirection = this.sortDirection === "asc" ? "desc" : "asc";
-    this.pokeDexList = [...this.pokeDexList].sort((a, b) => {
-      const cmp = a[key].localeCompare(b[key]);
-      return this.sortDirection === "asc" ? cmp : -cmp;
-    });
-  },
-});
-
-effect(async () => {
-  await pokeDex.fetchData("https://pokeapi.co/api/v2/pokemon/?offset=1100&limit=20");
-});

@@ -26,8 +26,8 @@ export function store<T extends object>(initialObject: T): Store<T> {
           return descriptor.get.call(receiver);
         }
 
-        // Deep reactivity, but avoid DOM Nodes
-        if (typeof result === "object" && result !== null && !(result instanceof Node)) {
+        // Deep reactivity
+        if (typeof result === "object" && result !== null) {
           return createReactiveObject(result as T);
         }
 

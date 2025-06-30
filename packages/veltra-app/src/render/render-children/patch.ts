@@ -7,13 +7,12 @@ import { isNil } from "~/util";
  * @param parentNode - The parent node.
  * @param oldNodes - The old nodes.
  * @param newNodes - The new nodes.
- * @param isFirstRender - Whether it is the first render.
  */
 export function patch(
   parentNode: Node,
-  oldNodes: Node[],
-  newNodes: (Node | undefined)[],
-  isFirstRender: boolean,
+  oldNodes: (ChildNode | undefined)[],
+  newNodes: (ChildNode | undefined)[],
+  insertBeforeNode?: Node,
 ) {
   const maxLength = Math.max(oldNodes.length, newNodes.length);
 
@@ -21,18 +20,13 @@ export function patch(
     const oldNode = oldNodes[i];
     const newNode = newNodes[i];
 
-    if (isFirstRender) {
-      if (isNil(newNode)) continue;
-
-      parentNode.appendChild(newNode);
-      oldNodes[i] = newNode;
-
-      continue;
-    }
-
     // Add new node
     if (isNil(oldNode) && !isNil(newNode)) {
-      parentNode.appendChild(newNode);
+      if (insertBeforeNode) {
+        parentNode.insertBefore(newNode, insertBeforeNode);
+      } else {
+        parentNode.appendChild(newNode);
+      }
       oldNodes[i] = newNode;
       continue;
     }
@@ -40,9 +34,8 @@ export function patch(
     // Remove old node
     if (!isNil(oldNode) && isNil(newNode)) {
       runComponentCleanup(oldNode);
-      parentNode.removeChild(oldNodes[i]);
-      oldNodes.splice(i, 1);
-      i--;
+      parentNode.removeChild(oldNode);
+      oldNodes[i] = undefined;
       continue;
     }
 
@@ -52,12 +45,9 @@ export function patch(
     }
 
     if (oldNode && newNode) {
-      // Replace node with node
-      if (!oldNode.isSameNode(newNode)) {
-        runComponentCleanup(oldNode);
-        (oldNode as ChildNode).replaceWith(newNode);
-        oldNodes[i] = newNode;
-      }
+      runComponentCleanup(oldNode);
+      oldNode.replaceWith(newNode);
+      oldNodes[i] = newNode;
       continue;
     }
 

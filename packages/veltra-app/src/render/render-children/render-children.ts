@@ -1,41 +1,63 @@
+import { effect } from "~/reactivity";
 import { getNode, toArray } from "~/util";
 
+import { getCurrentSuspenseHandler } from "../suspense";
 import { patch } from "./patch";
-import { suspenseReactor } from "./suspense-effect";
 
 /**
  * render the children
  *
  * @param parentNode - The parent node.
  * @param children - The children to render.
- * @param index - The index to insert the children at.
  */
-export function renderChildren(parentNode: Node, children: JSX.Element[], index?: number) {
-  let insertBeforeNode: ChildNode | null = null;
-
-  if (index !== undefined) {
-    insertBeforeNode = parentNode.childNodes[index] as ChildNode;
+export function renderChildren(
+  parentNode: Node,
+  children: JSX.Element[],
+  anchor: Node = document.createTextNode(""),
+) {
+  if (!parentNode.contains(anchor)) {
+    parentNode.appendChild(anchor);
   }
 
-  for (const childNode of children) {
-    if (typeof childNode === "function") {
-      let oldNodes: Node[] = [];
-      let isFirstRender = true;
+  const cleanupDomNodes: (() => void)[] = [];
 
-      suspenseReactor(() => {
-        const newNodes = toArray(childNode()).map(getNode).flat();
-        oldNodes = patch(parentNode, oldNodes, newNodes, isFirstRender);
-        isFirstRender = false;
-      });
-    } else {
-      const node = getNode(childNode);
-      if (!Array.isArray(node) && node) {
-        if (insertBeforeNode) {
-          parentNode.insertBefore(node, insertBeforeNode);
+  for (const child of children) {
+    let oldNodes: (ChildNode | undefined)[] = [];
+    const handler = getCurrentSuspenseHandler();
+
+    const disposer = effect(() => {
+      let result: JSX.Element;
+      let newNodes: (ChildNode | undefined)[] = [];
+
+      try {
+        result = typeof child === "function" ? child() : child;
+        newNodes = toArray(getNode(result)) as ChildNode[];
+      } catch (error) {
+        if (error instanceof Promise) {
+          if (handler) {
+            queueMicrotask(() => {
+              disposer();
+            });
+            handler(error);
+          }
         } else {
-          parentNode.appendChild(node);
+          throw error;
         }
+      } finally {
+        oldNodes = patch(parentNode, oldNodes, newNodes, anchor);
+
+        cleanupDomNodes.push(() => {
+          patch(parentNode, oldNodes, [], anchor);
+        });
       }
-    }
+    });
+
+    cleanupDomNodes.push(() => {
+      disposer();
+    });
   }
+
+  return () => {
+    cleanupDomNodes.forEach((cleanup) => cleanup());
+  };
 }

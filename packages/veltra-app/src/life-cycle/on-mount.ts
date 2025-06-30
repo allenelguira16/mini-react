@@ -2,6 +2,11 @@ import { mountContext } from "~/context";
 
 export type MountFn = () => void | (() => void);
 
+/**
+ * on mount
+ *
+ * @param fn - The function to run on mount.
+ */
 export function onMount(fn: () => () => void): void;
 export function onMount(fn: () => void): void;
 export function onMount(fn: MountFn): void {

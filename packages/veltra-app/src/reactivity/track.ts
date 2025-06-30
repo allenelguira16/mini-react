@@ -1,8 +1,16 @@
 import { activeEffect, EffectFn } from "./effect";
 
-// WeakMap to track which targets/keys map to which effects
+/**
+ * WeakMap to track which targets/keys map to which effects
+ */
 const targetToPropertyEffectsMap: WeakMap<object, Map<PropertyKey, Set<EffectFn>>> = new WeakMap();
 
+/**
+ * Track a property
+ *
+ * @param target - The target object.
+ * @param key - The property key.
+ */
 export function track(target: object, key: PropertyKey) {
   if (!activeEffect) return; // No effect is currently running
 
@@ -29,6 +37,12 @@ export function track(target: object, key: PropertyKey) {
   }
 }
 
+/**
+ * Trigger a property
+ *
+ * @param target - The target object.
+ * @param key - The property key.
+ */
 export function trigger(target: object, key: PropertyKey) {
   const propertyEffectsMap = targetToPropertyEffectsMap.get(target);
   if (!propertyEffectsMap) return;

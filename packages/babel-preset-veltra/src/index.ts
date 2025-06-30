@@ -5,11 +5,17 @@ import babelReactPlugin from "@babel/preset-react";
 import {
   logJsxPlugin,
   loopAutoWrapPlugin,
+  loopMemoPlugin,
   suspenseWrapPlugin,
   wrapJSXExpressionsPlugin,
 } from "./plugins";
 
-// Main preset function
+/**
+ * babel preset for veltra
+ *
+ * @param api - The babel api.
+ * @returns The babel options.
+ */
 export default function babelPresetVeltra(api: ConfigAPI): TransformOptions {
   api.assertVersion(7);
 
@@ -25,9 +31,9 @@ export default function babelPresetVeltra(api: ConfigAPI): TransformOptions {
     ],
     plugins: [
       logJsxPlugin,
-      // loopMapPlugin,
-      loopAutoWrapPlugin,
       suspenseWrapPlugin,
+      loopAutoWrapPlugin,
+      loopMemoPlugin,
       wrapJSXExpressionsPlugin,
     ],
   };

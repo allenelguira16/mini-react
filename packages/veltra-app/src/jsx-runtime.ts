@@ -13,12 +13,13 @@ import { toArray } from "./util";
 const jsx = (
   type: string | ((props: any) => any),
   { children = [], ...props }: Record<string, any>,
+  key?: () => string,
 ) => {
   if (IS_SSR) {
     return hSSR(type, props, toArray(children));
   }
 
-  return h(type, props, toArray(children));
+  return h(type, props, toArray(children), key);
 };
 
 export { Fragment, jsx, jsx as jsxs };

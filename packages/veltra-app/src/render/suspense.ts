@@ -1,86 +1,65 @@
-import { effect, state } from "~/reactivity";
-import { getNode, toArray } from "~/util";
+import { onMount } from "~/life-cycle";
 
-import { patch } from "./render-children/patch";
+import { componentRootNodes } from "./mount-component";
+import { renderChildren } from "./render-children";
 
-export const suspensePromise = state<Promise<void> | null>(null);
+const suspenseHandlerList: ((promise: Promise<void>) => void)[] = [];
 
-/**
- * create a suspense component
- *
- * @param props - The properties of the component.
- * @returns The suspense component.
- */
-export function Suspense(props: { fallback: JSX.Element; children: JSX.Element }) {
-  const rootNode = document.createTextNode("");
-  let parentNode: Node;
+export function Suspense(props: { fallback?: JSX.Element; children: JSX.Element }) {
+  const rootNode = document.createTextNode(""); // anchor
+  componentRootNodes.add(rootNode);
 
-  // Change types since this is transformed by babel
   const {
-    fallback: _fallback,
+    fallback,
     children: [children],
   } = props as unknown as {
-    fallback: () => JSX.Element;
+    fallback?: () => JSX.Element;
     children: [() => JSX.Element[]];
   };
 
-  const fallback = _fallback() as Node;
+  onMount(() => {
+    const parentNode = rootNode.parentNode!;
 
-  let isFirstRender = true;
-  let oldNodes: Node[] = [];
+    if (!parentNode) return;
 
-  const renderFallback = () => {
-    oldNodes = patch(parentNode, oldNodes, getNodes(fallback), isFirstRender);
-    isFirstRender = false;
-  };
+    const cleanups: (() => void)[] = [];
 
-  const renderSuspenseChildren = () => {
-    const newNodes = getNodes(children()).flat() as Node[];
-    oldNodes = patch(parentNode, oldNodes, newNodes, isFirstRender);
-  };
+    const handler = (promise: Promise<void>) => {
+      queueMicrotask(() => {
+        cleanups.forEach((cleanup) => cleanup());
 
-  queueMicrotask(() => {
-    parentNode = rootNode.parentNode as Node;
-
-    effect(() => {
-      try {
-        if (!parentNode) return;
-        renderFallback();
-
-        if (suspensePromise.value) throw suspensePromise.value;
-
-        renderSuspenseChildren();
-      } catch (errorOrPromise) {
-        if (errorOrPromise instanceof Promise) {
-          errorOrPromise
-            .then(() => {
-              suspensePromise.value = null;
-              renderSuspenseChildren();
-            })
-            .catch(() => {});
-        } else {
-          throw errorOrPromise;
+        if (fallback) {
+          cleanups.push(renderChildren(parentNode, [fallback], rootNode));
         }
-      }
-    });
+      });
+
+      promise.then(() => {
+        cleanups.forEach((cleanup) => cleanup());
+        suspenseHandlerList.push(handler);
+        cleanups.push(renderChildren(parentNode, [children], rootNode));
+        suspenseHandlerList.pop();
+      });
+    };
+
+    suspenseHandlerList.push(handler);
+    cleanups.push(renderChildren(parentNode, [children], rootNode));
+    suspenseHandlerList.pop();
   });
 
-  // initial render is fallback node
   return rootNode;
 }
 
-const getNodes = <T extends JSX.Element | Node>(items: T) => {
-  const results: T[] = [];
-  const flatItems = toArray(items);
+// function reset(root: ParentNode, keepElement: Node) {
+//   console.log(root.childNodes);
+//   for (const child of Array.from(root.childNodes)) {
+//     if (child.contains(keepElement)) {
+//       reset(child as unknown as ParentNode, keepElement);
+//     } else {
+//       child.remove();
+//     }
+//   }
+// }
 
-  for (const item of flatItems) {
-    const node = getNode(item); // Throws here if resource.value is pending
-    if (Array.isArray(node)) {
-      results.push(...(node as T[]));
-    } else {
-      results.push(node as T);
-    }
-  }
-
-  return results;
-};
+export function getCurrentSuspenseHandler() {
+  return suspenseHandlerList[suspenseHandlerList.length - 1];
+}

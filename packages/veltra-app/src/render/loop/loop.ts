@@ -1,14 +1,9 @@
 import { jsx } from "~/jsx-runtime";
 import { onDestroy, onMount } from "~/life-cycle";
 import { effect, State } from "~/reactivity";
-import { componentRootNodes, suspensePromise } from "~/render";
+import { componentRootNodes } from "~/render";
 
 import { newEntries, removeEntryNodes, removeOldNodes, reorderEntries } from "./util";
-
-type ForProps<T> = {
-  items: () => T[];
-  children: [(item: T, index: { value: number }) => JSX.Element];
-};
 
 export type Entry<T> = {
   id: number;
@@ -24,65 +19,62 @@ export type Entry<T> = {
  * @returns The loop component.
  */
 export function loop<T>(items: T[]) {
+  // const handler = getCurrentSuspenseHandler();
+
   return {
     each: (children: (item: T, index: State<number>) => JSX.Element) => {
+      const each = items as unknown as () => T[];
+      children = children as unknown as [(item: T, index: State<number>) => JSX.Element][0];
       // Use jsx to register it as a component
       // That way we can use life cycles hooks
-      return jsx(
-        (props: ForProps<T>) => {
-          const {
-            items: each,
-            children: [children],
-          } = props;
+      // const trigger = state(() => each());
+      // effect(() => {
+      //   console.log(trigger.value());
+      // });
 
-          const rootNode = document.createTextNode("");
+      // untrack(() => each());
 
-          let entries: Entry<T>[] = [];
-          const idCounter = 0;
+      return jsx(() => {
+        const rootNode = document.createTextNode("");
 
-          function reconcile(parentNode: Node, items: T[]) {
-            // Remove extra
-            entries = removeOldNodes(parentNode, items, entries);
-            // Add new
-            entries.push(...newEntries(items, entries, children, idCounter));
+        let entries: Entry<T>[] = [];
+        // eslint-disable-next-line
+        let idCounter = 0;
 
-            reorderEntries(rootNode, parentNode, entries, items);
+        function reconcile(parentNode: Node, items: T[]) {
+          // Remove extra
+          entries = removeOldNodes(parentNode, items, entries);
+          // Add new
+          entries.push(...newEntries(items, entries, children, idCounter));
+
+          reorderEntries(rootNode, parentNode, entries, items);
+        }
+
+        const render = () => {
+          const parentNode = rootNode.parentNode;
+          if (!parentNode) return;
+
+          const list = each();
+          if (!list) return;
+
+          reconcile(parentNode, [...list]);
+        };
+
+        onMount(() => {
+          effect(() => {
+            render();
+          });
+        });
+
+        onDestroy(() => {
+          for (const entry of entries) {
+            removeEntryNodes(rootNode.parentNode!, entry);
           }
+        });
 
-          onMount(() => {
-            effect(() => {
-              const parentNode = rootNode.parentNode;
-              if (!parentNode) return;
-
-              try {
-                const list = each();
-                if (!list) return;
-
-                reconcile(parentNode, [...list]);
-              } catch (errorOrPromise) {
-                if (errorOrPromise instanceof Promise) {
-                  suspensePromise.value = errorOrPromise;
-                } else {
-                  throw errorOrPromise;
-                }
-              }
-            });
-          });
-
-          onDestroy(() => {
-            for (const entry of entries) {
-              removeEntryNodes(rootNode.parentNode!, entry);
-            }
-          });
-
-          componentRootNodes.add(rootNode);
-          return rootNode;
-        },
-        {
-          items: () => items,
-          children,
-        },
-      );
+        componentRootNodes.add(rootNode);
+        return rootNode;
+      }, {});
     },
   };
 }

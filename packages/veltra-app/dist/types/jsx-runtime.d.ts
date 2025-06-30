@@ -1,4 +1,4 @@
-export { F as Fragment } from './fragment-DsTMuH_N.js';
+export { F as Fragment } from './fragment-DHIT8DJc.js';
 
 /**
  * jsx runtime
@@ -8,6 +8,6 @@ export { F as Fragment } from './fragment-DsTMuH_N.js';
  * @param children - The children of the element.
  * @returns The JSX element.
  */
-declare const jsx: (type: string | ((props: Record<string, any>) => any), { children, ...props }: Record<string, any>) => any;
+declare const jsx: (type: string | ((props: any) => any), { children, ...props }: Record<string, any>, key?: () => string) => any;
 
 export { jsx, jsx as jsxs };

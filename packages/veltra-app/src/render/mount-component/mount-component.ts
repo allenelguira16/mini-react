@@ -1,5 +1,6 @@
-import { initializeLifecycleContext, LifecycleContext, registerLifeCycles } from "~/life-cycle";
+import { createLifeCycleContext, runLifecycle } from "~/life-cycle";
 import { untrack } from "~/reactivity";
+import { toArray } from "~/util";
 
 import { resolveComponentProps } from "./resolve-component-props";
 
@@ -14,29 +15,22 @@ export const componentRootNodes = new Set<Node>();
  */
 export function mountComponent(
   type: (props: Record<string, any>) => any,
-  props: Record<string, any>,
+  { key: _key, ...props }: { key?: () => string } & Record<string, any>,
   children: JSX.Element[],
 ) {
+  const key = _key?.();
+
   resolveComponentProps(type, props);
 
-  const lifecycleContext: LifecycleContext = {
-    mount: [],
-    effect: [],
-    destroy: [],
-  };
+  const context = createLifeCycleContext(type, key);
 
-  initializeLifecycleContext(lifecycleContext);
+  const targetNode = document.createTextNode("");
+  const node = toArray(untrack(() => type({ ...props, children })));
 
-  const node = untrack(() => type({ ...props, children }));
-  let targetNode = node;
+  runLifecycle(context, targetNode);
 
-  if (Array.isArray(node)) {
-    targetNode = document.createTextNode("");
-    node.unshift(targetNode);
-  }
-
-  registerLifeCycles(lifecycleContext, targetNode);
-
+  node.unshift(targetNode);
   componentRootNodes.add(targetNode);
+
   return node;
 }

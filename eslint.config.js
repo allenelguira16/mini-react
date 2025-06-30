@@ -33,17 +33,23 @@ export default [
       "simple-import-sort/imports": "warn",
       "simple-import-sort/exports": "warn",
 
-      // Detect unused imports/vars
+      // Unused import cleanup
       "unused-imports/no-unused-imports": "warn",
-      "unused-imports/no-unused-vars": [
-        "warn",
+
+      // ✅ Use @typescript-eslint's rule for unused vars instead
+      "@typescript-eslint/no-unused-vars": [
+        "error",
         {
           vars: "all",
           varsIgnorePattern: "^_",
           args: "after-used",
           argsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
         },
       ],
+
+      // ⛔ Disable unused-imports version of this rule
+      "unused-imports/no-unused-vars": "off",
 
       // // Console statements
       // "no-console": ["warn", { allow: ["warn", "error"] }],

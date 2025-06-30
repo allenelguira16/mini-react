@@ -5,6 +5,11 @@ import type { Plugin } from "vite";
 
 import babelPluginVeltra from "../../babel-preset-veltra/src/index.ts";
 
+/**
+ * vite plugin for veltra
+ *
+ * @returns The vite plugin.
+ */
 const vitePlugin = (): Plugin => {
   return {
     name: "vite-plugin-veltra",

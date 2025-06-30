@@ -1,3 +1,11 @@
+/**
+ * Create a JSX element for SSR
+ *
+ * @param type - The type of the element.
+ * @param props - The properties of the element.
+ * @param children - The children of the element.
+ * @returns The JSX element for SSR.
+ */
 export function hSSR(
   type: string | ((props: Record<string, any>) => any),
   props: Record<string, any>,
@@ -10,6 +18,12 @@ export function hSSR(
   return `<${type} ${handlePropsSSR(props)}>${handleChildrenSSR(children)}</${type}>`;
 }
 
+/**
+ * Handle the properties of the element for SSR
+ *
+ * @param props - The properties of the element.
+ * @returns The transformed properties.
+ */
 function handlePropsSSR(props: Record<string, any>) {
   const transformedProps: string[] = [];
 
@@ -34,6 +48,12 @@ function handlePropsSSR(props: Record<string, any>) {
   return transformedProps.join(" ");
 }
 
+/**
+ * Handle the children of the element for SSR
+ *
+ * @param children - The children of the element.
+ * @returns The transformed children.
+ */
 function handleChildrenSSR(children: JSX.Element[]) {
   const transformedChildren: string[] = [];
 
@@ -44,13 +64,7 @@ function handleChildrenSSR(children: JSX.Element[]) {
       // RECURSIVELY flatten nested arrays
       child.forEach((nested) => transformedChildren.push(handleChildrenSSR([nested])));
     } else {
-      // console.log(child);
       transformedChildren.push(child as string);
-      // return child
-      // const childRef = getNode(child) as Node;
-
-      // $parent.appendChild(childRef);
-      // mountSpecialComponent(childRef);
     }
   }
 

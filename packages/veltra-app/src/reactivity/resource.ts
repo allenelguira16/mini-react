@@ -1,4 +1,4 @@
-import { effect, store } from "~/reactivity";
+import { effect, state, untrack } from "~/reactivity";
 
 export type ResourceReturn<T> = {
   readonly loading: boolean;
@@ -8,34 +8,46 @@ export type ResourceReturn<T> = {
   mutate: (newValue: T) => void;
 };
 
+/**
+ * Create a reactive resource
+ *
+ * @param fetcher - The function to fetch the data.
+ * @returns The resource.
+ */
 export function resource<T>(fetcher: () => Promise<T>): ResourceReturn<T> {
-  const data = store({
-    loading: true,
-    error: null as Error | null,
-    data: undefined as T,
-  });
+  const loading = state(true);
 
-  let realPromise: Promise<void> | null = null;
+  let error = null as Error | null;
+  let data = undefined as T | undefined;
+  let realPromise: Promise<T> | null = null;
+  let promiseStatus = "pending" as "pending" | "fulfilled" | "rejected";
 
-  const refetch = () => {
-    data.loading = true;
+  const version = state(0);
 
-    realPromise = new Promise<void>((resolve, reject) => {
-      fetcher()
-        .then((result) => {
-          data.data = result;
-          data.loading = false;
-          data.error = null;
-          resolve();
-        })
-        .catch((err) => {
-          data.error = err;
-          data.loading = false;
-          reject(err);
-        });
-    });
+  const refetch = async () => {
+    loading.value = true;
+    error = null;
+    data = undefined as T | undefined;
+    promiseStatus = "pending";
+    realPromise = fetcher();
 
-    return realPromise;
+    realPromise
+      .then((result) => {
+        data = result;
+        error = null;
+        loading.value = false;
+        promiseStatus = "fulfilled";
+        // untrack(() => version.value++);
+      })
+      .catch((err) => {
+        data = undefined as T | undefined;
+        error = err;
+        promiseStatus = "rejected";
+        loading.value = false;
+        // untrack(() => version.value++);
+      });
+
+    untrack(() => version.value++);
   };
 
   effect(() => {
@@ -44,19 +56,23 @@ export function resource<T>(fetcher: () => Promise<T>): ResourceReturn<T> {
 
   return {
     get loading() {
-      return data.loading;
+      return loading.value;
     },
     get error() {
-      return data.error;
+      return error;
     },
     get data() {
-      if (data.loading) throw realPromise;
-      if (!data.loading && data.error) throw data.error;
-      return data.data;
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      version.value;
+      if (promiseStatus === "pending") throw realPromise;
+      if (promiseStatus === "rejected") throw error;
+
+      return data as T;
     },
     refetch,
     mutate(newValue: T) {
-      data.data = newValue;
+      data = newValue;
+      version.value++;
     },
   };
 }

@@ -11,7 +11,6 @@ export function onNodeReattached(callback: () => void, targetNode: Node) {
       // Check for added nodes
       for (const node of mutation.addedNodes) {
         if (node === targetNode) {
-          observer.disconnect();
           callback();
           break;
         }
@@ -26,4 +25,8 @@ export function onNodeReattached(callback: () => void, targetNode: Node) {
 
     observer.observe(targetNode.parentNode, { childList: true, subtree: true });
   });
+
+  return () => {
+    observer.disconnect();
+  };
 }

@@ -28,7 +28,7 @@ declare function navigate(path: string): void;
  */
 declare function Router(props: {
     routes: Route[];
-}): () => any;
+}): () => JSX.Element;
 
 export { Router, location, navigate };
 export type { Location, Route };

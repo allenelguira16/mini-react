@@ -2,6 +2,12 @@ import { NodePath } from "@babel/core";
 import { declare } from "@babel/helper-plugin-utils";
 import * as t from "@babel/types";
 
+/**
+ * babel plugin to log jsx
+ *
+ * @param api - The babel api.
+ * @returns The babel options.
+ */
 export const logJsxPlugin = declare((api) => {
   api.assertVersion(7);
 

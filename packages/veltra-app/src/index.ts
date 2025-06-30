@@ -8,6 +8,7 @@ export {
   resource,
   type State,
   state,
+  stopEffect,
   store,
   untrack,
 } from "./reactivity";
