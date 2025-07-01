@@ -93,6 +93,12 @@ declare function loop<T>(items: T[]): {
     each: (children: (item: T, index: State<number>) => JSX.Element) => any;
 };
 
+/**
+ * Suspense component
+ *
+ * @param props - The props of the component.
+ * @returns The root node of the component.
+ */
 declare function Suspense(props: {
     fallback?: JSX.Element;
     children: JSX.Element;

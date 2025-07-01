@@ -1,3 +1,5 @@
+import "./jsx.d.ts";
+
 import { IS_SSR } from "./const";
 import { Fragment, h, hSSR } from "./render";
 import { toArray } from "./util";
