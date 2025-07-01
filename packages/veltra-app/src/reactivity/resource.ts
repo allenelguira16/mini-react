@@ -15,8 +15,7 @@ export type ResourceReturn<T> = {
  * @returns The resource.
  */
 export function resource<T>(fetcher: () => Promise<T>): ResourceReturn<T> {
-  const loading = state(true);
-
+  let loading = true;
   let error = null as Error | null;
   let data = undefined as T | undefined;
   let realPromise: Promise<T> | null = null;
@@ -25,7 +24,7 @@ export function resource<T>(fetcher: () => Promise<T>): ResourceReturn<T> {
   const version = state(0);
 
   const refetch = async () => {
-    loading.value = true;
+    loading = true;
     error = null;
     data = undefined as T | undefined;
     promiseStatus = "pending";
@@ -35,16 +34,16 @@ export function resource<T>(fetcher: () => Promise<T>): ResourceReturn<T> {
       .then((result) => {
         data = result;
         error = null;
-        loading.value = false;
         promiseStatus = "fulfilled";
-        // untrack(() => version.value++);
+        loading = false;
+        untrack(() => version.value++);
       })
       .catch((err) => {
         data = undefined as T | undefined;
         error = err;
         promiseStatus = "rejected";
-        loading.value = false;
-        // untrack(() => version.value++);
+        loading = false;
+        untrack(() => version.value++);
       });
 
     untrack(() => version.value++);
@@ -56,7 +55,9 @@ export function resource<T>(fetcher: () => Promise<T>): ResourceReturn<T> {
 
   return {
     get loading() {
-      return loading.value;
+      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      version.value;
+      return loading;
     },
     get error() {
       return error;
@@ -64,6 +65,7 @@ export function resource<T>(fetcher: () => Promise<T>): ResourceReturn<T> {
     get data() {
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       version.value;
+
       if (promiseStatus === "pending") throw realPromise;
       if (promiseStatus === "rejected") throw error;
 

@@ -1,4 +1,4 @@
-import { runComponentCleanup } from "~/life-cycle";
+import { runComponentCleanup, runLifecycle } from "~/life-cycle";
 import { isNil } from "~/util";
 
 /**
@@ -27,6 +27,7 @@ export function patch(
       } else {
         parentNode.appendChild(newNode);
       }
+      runLifecycle(newNode);
       oldNodes[i] = newNode;
       continue;
     }
@@ -46,6 +47,7 @@ export function patch(
 
     if (oldNode && newNode) {
       runComponentCleanup(oldNode);
+      runLifecycle(newNode);
       oldNode.replaceWith(newNode);
       oldNodes[i] = newNode;
       continue;

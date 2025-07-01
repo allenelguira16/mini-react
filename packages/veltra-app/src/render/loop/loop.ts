@@ -1,7 +1,7 @@
 import { jsx } from "~/jsx-runtime";
 import { onDestroy, onMount } from "~/life-cycle";
 import { effect, State } from "~/reactivity";
-import { componentRootNodes } from "~/render";
+import { componentRootNodes, getCurrentSuspenseHandler } from "~/render";
 
 import { newEntries, removeEntryNodes, removeOldNodes, reorderEntries } from "./util";
 
@@ -19,7 +19,7 @@ export type Entry<T> = {
  * @returns The loop component.
  */
 export function loop<T>(items: T[]) {
-  // const handler = getCurrentSuspenseHandler();
+  const handler = getCurrentSuspenseHandler();
 
   return {
     each: (children: (item: T, index: State<number>) => JSX.Element) => {
@@ -27,13 +27,6 @@ export function loop<T>(items: T[]) {
       children = children as unknown as [(item: T, index: State<number>) => JSX.Element][0];
       // Use jsx to register it as a component
       // That way we can use life cycles hooks
-      // const trigger = state(() => each());
-      // effect(() => {
-      //   console.log(trigger.value());
-      // });
-
-      // untrack(() => each());
-
       return jsx(() => {
         const rootNode = document.createTextNode("");
 
@@ -50,20 +43,29 @@ export function loop<T>(items: T[]) {
           reorderEntries(rootNode, parentNode, entries, items);
         }
 
+        // TODO: handle promise
         const render = () => {
-          const parentNode = rootNode.parentNode;
-          if (!parentNode) return;
+          effect(() => {
+            try {
+              const parentNode = rootNode.parentNode;
+              if (!parentNode) return;
 
-          const list = each();
-          if (!list) return;
+              const list = each();
+              if (!list) return;
 
-          reconcile(parentNode, [...list]);
+              reconcile(parentNode, [...list]);
+            } catch (error) {
+              if (error instanceof Promise) {
+                handler(error);
+              } else {
+                throw error;
+              }
+            }
+          });
         };
 
         onMount(() => {
-          effect(() => {
-            render();
-          });
+          render();
         });
 
         onDestroy(() => {

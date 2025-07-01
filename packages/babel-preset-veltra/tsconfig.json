@@ -15,6 +15,7 @@
     "importHelpers": true,
     "allowImportingTsExtensions": true,
     "composite": true,
+    "allowSyntheticDefaultImports": true,
 
     /* Linting */
     "strict": true,

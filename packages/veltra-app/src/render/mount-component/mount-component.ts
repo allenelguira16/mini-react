@@ -1,4 +1,4 @@
-import { createLifeCycleContext, runLifecycle } from "~/life-cycle";
+import { componentLifecycleContexts, createLifeCycleContext } from "~/life-cycle";
 import { untrack } from "~/reactivity";
 import { toArray } from "~/util";
 
@@ -25,12 +25,12 @@ export function mountComponent(
   const context = createLifeCycleContext(type, key);
 
   const targetNode = document.createTextNode("");
-  const node = toArray(untrack(() => type({ ...props, children })));
-
-  runLifecycle(context, targetNode);
-
-  node.unshift(targetNode);
   componentRootNodes.add(targetNode);
 
+  const node = toArray(untrack(() => type({ ...props, children })));
+
+  componentLifecycleContexts.set(targetNode, context);
+
+  node.unshift(targetNode);
   return node;
 }

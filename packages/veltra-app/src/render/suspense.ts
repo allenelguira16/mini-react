@@ -5,8 +5,14 @@ import { renderChildren } from "./render-children";
 
 const suspenseHandlerList: ((promise: Promise<void>) => void)[] = [];
 
+/**
+ * Suspense component
+ *
+ * @param props - The props of the component.
+ * @returns The root node of the component.
+ */
 export function Suspense(props: { fallback?: JSX.Element; children: JSX.Element }) {
-  const rootNode = document.createTextNode(""); // anchor
+  const rootNode = document.createTextNode("");
   componentRootNodes.add(rootNode);
 
   const {
@@ -24,41 +30,31 @@ export function Suspense(props: { fallback?: JSX.Element; children: JSX.Element 
 
     const cleanups: (() => void)[] = [];
 
+    const withSuspenseRender = (items: JSX.Element) => {
+      suspenseHandlerList.push(handler);
+      cleanups.push(renderChildren(parentNode, [items], rootNode));
+      suspenseHandlerList.pop();
+    };
+
     const handler = (promise: Promise<void>) => {
       queueMicrotask(() => {
         cleanups.forEach((cleanup) => cleanup());
 
-        if (fallback) {
-          cleanups.push(renderChildren(parentNode, [fallback], rootNode));
-        }
+        if (fallback) withSuspenseRender(fallback);
       });
 
       promise.then(() => {
         cleanups.forEach((cleanup) => cleanup());
-        suspenseHandlerList.push(handler);
-        cleanups.push(renderChildren(parentNode, [children], rootNode));
-        suspenseHandlerList.pop();
+
+        withSuspenseRender(children);
       });
     };
 
-    suspenseHandlerList.push(handler);
-    cleanups.push(renderChildren(parentNode, [children], rootNode));
-    suspenseHandlerList.pop();
+    withSuspenseRender(children);
   });
 
   return rootNode;
 }
-
-// function reset(root: ParentNode, keepElement: Node) {
-//   console.log(root.childNodes);
-//   for (const child of Array.from(root.childNodes)) {
-//     if (child.contains(keepElement)) {
-//       reset(child as unknown as ParentNode, keepElement);
-//     } else {
-//       child.remove();
-//     }
-//   }
-// }
 
 export function getCurrentSuspenseHandler() {
   return suspenseHandlerList[suspenseHandlerList.length - 1];

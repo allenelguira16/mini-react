@@ -19,5 +19,6 @@ export function runComponentCleanup(node: Node) {
   const cleanups = cleanupMap.get(node) || [];
   for (const cleanup of cleanups) {
     cleanup();
+    cleanupMap.delete(node);
   }
 }

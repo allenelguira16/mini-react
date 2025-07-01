@@ -1,6 +1,5 @@
 import { setDestroyContext, setEffectContext, setMountContext, setStateContext } from "~/context";
 import { EffectFn, removeEffect, State } from "~/reactivity";
-import { onNodeReattached } from "~/util";
 
 import { setComponentCleanup } from "./component-cleanup";
 import { DestroyFn } from "./on-destroy";
@@ -16,13 +15,18 @@ export type LifecycleContext = {
   destroy: DestroyFn[];
 };
 
+export const componentLifecycleContexts = new Map<Node, LifecycleContext>();
+
 /**
  * run the life cycle
  *
  * @param context - The lifecycle context.
  * @param targetNode - The target node.
  */
-export function runLifecycle(context: LifecycleContext, targetNode: Node) {
+export function runLifecycle(targetNode: Node) {
+  const context = componentLifecycleContexts.get(targetNode);
+  if (!context) return;
+
   const cleanups: (() => void)[] = [];
 
   setMountContext(null);
@@ -31,11 +35,6 @@ export function runLifecycle(context: LifecycleContext, targetNode: Node) {
   setDestroyContext(null);
 
   setComponentCleanup(targetNode, cleanups);
-
-  // Re-run memo when node is reattached
-  onNodeReattached(() => {
-    cleanups.push(...context.mount.map((fn) => fn()).filter((c) => !!c));
-  }, targetNode);
 
   // Pass cleanups once dom is painted
   queueMicrotask(() => {
