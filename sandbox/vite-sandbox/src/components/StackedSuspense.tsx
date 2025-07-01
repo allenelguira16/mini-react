@@ -1,13 +1,6 @@
 import { resource, Suspense } from "@veltra/app";
 
 export const StackedSuspense = () => {
-  const msg = resource(async () => {
-    await new Promise((resolve) => {
-      setTimeout(resolve, 1000); // delay for 1 second
-    });
-    return "hello world";
-  });
-
   const msg2 = resource(async () => {
     await new Promise((resolve) => {
       setTimeout(resolve, 2000); // delay for 1 second
@@ -18,7 +11,7 @@ export const StackedSuspense = () => {
   return (
     <div class="p-2 flex flex-col container m-auto">
       <Suspense fallback={<div>loading 1...</div>}>
-        <div>{msg.data}</div>
+        {/* <Component /> */}
         <Suspense fallback={<div>loading 2...</div>}>
           <div>{msg2.data}</div>
         </Suspense>
@@ -26,3 +19,14 @@ export const StackedSuspense = () => {
     </div>
   );
 };
+
+function Component() {
+  const msg = resource(async () => {
+    await new Promise((resolve) => {
+      setTimeout(resolve, 1000); // delay for 1 second
+    });
+    return "hello world";
+  });
+
+  return <div>{msg.data}</div>;
+}

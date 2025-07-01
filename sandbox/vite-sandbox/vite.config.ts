@@ -6,6 +6,8 @@ import tsconfigPaths from "vite-tsconfig-paths";
 export default defineConfig(async ({ mode }) => {
   let veltraPlugin: () => Plugin;
 
+  console.log(mode);
+
   if (mode === "development") {
     veltraPlugin = (await import("../../packages/vite-plugin-veltra/src/index.ts")).default;
   } else if (mode === "production") {

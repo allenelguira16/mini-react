@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "NODE_ENV=development vite",
     "build": "NODE_ENV=production vite build",
-    "preview": "NODE_ENV=production vite build && production vite preview",
+    "preview": "NODE_ENV=production vite build && vite preview",
     "stats": "NODE_ENV=production vite-bundle-visualizer -o stats.html"
   },
   "devDependencies": {

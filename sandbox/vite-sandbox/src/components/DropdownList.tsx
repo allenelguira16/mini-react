@@ -1,4 +1,4 @@
-import { loop, onDestroy, onMount, state, store } from "@veltra/app";
+import { onDestroy, onMount, state, store } from "@veltra/app";
 
 import { name } from "../globalState";
 
@@ -80,8 +80,10 @@ export const Dropdowns = () => {
             Unmount Dropdown List
           </button>
         </div>
-        {dropdownStore.showDropdown && <DropdownList dropdowns={dropdownStore} />}
-        <div>Hi</div>
+        <>
+          {dropdownStore.showDropdown && <DropdownList dropdowns={dropdownStore} />}
+          <div>Hi</div>
+        </>
       </div>
     </>
   );
@@ -104,7 +106,10 @@ const DropdownList = ({ dropdowns }: TDropdownListProps) => {
 
   return (
     <div class="flex gap-2 flex-col lg:flex-row">
-      {loop(dropdowns.numbers).each((number) => (
+      {/* {loop(dropdowns.numbers).each((number) => (
+        <Dropdown number={number} />
+      ))} */}
+      {dropdowns.numbers.map((number) => (
         <Dropdown number={number} />
       ))}
     </div>
