@@ -71,38 +71,40 @@ export const PokeDexSuspense = () => {
           <Suspense
             fallback={
               <>
-                {loop(Array.from({ length: 20 }).map((_, i) => i + 1)).each((number) => (
-                  <tr>
-                    <td colspan="3" class="h-[24px] text-center">
-                      {number === 10 && "loading..."}
-                    </td>
-                  </tr>
-                ))}
+                {Array.from({ length: 20 })
+                  .map((_, i) => i + 1)
+                  .map((number) => (
+                    <tr>
+                      <td colspan="3" class="h-[24px] text-center">
+                        {number === 10 && "loading..."}
+                      </td>
+                    </tr>
+                  ))}
               </>
             }
           >
-            {/* <div>
-              <div> */}
-            {loop(pokeDexResource.data?.results).each(({ name, url }, index) => (
-              <tr>
-                <td class="w-1/3 text-center">{index.value + 1}</td>
-                <td class="w-1/3 text-center truncate">{name}</td>
-                <td class="w-1/3 text-center truncate" onClick={showUrlOnClick(url)}>
-                  {url}
-                </td>
-              </tr>
-            ))}
-            {/* {pokeDexResource.data?.results.map(({ name, url }, index) => (
-              <tr>
-                <td class="w-1/3 text-center">{index + 1}</td>
-                <td class="w-1/3 text-center truncate">{name}</td>
-                <td class="w-1/3 text-center truncate" onClick={showUrlOnClick(url)}>
-                  {url}
-                </td>
-              </tr>
-            ))} */}
-            {/* </div>
-            </div> */}
+            <>
+              {loop(pokeDexResource.data?.results).each(({ name, url }, index) => (
+                <tr>
+                  <td class="w-1/3 text-center">{index.value + 1}</td>
+                  <td class="w-1/3 text-center truncate">{name}</td>
+                  <td class="w-1/3 text-center truncate" onClick={showUrlOnClick(url)}>
+                    {url}
+                  </td>
+                </tr>
+              ))}
+            </>
+            {/* <>
+              {pokeDexResource.data.results.map(({ name, url }, index) => (
+                <tr>
+                  <td class="w-1/3 text-center">{index + 1}</td>
+                  <td class="w-1/3 text-center truncate">{name}</td>
+                  <td class="w-1/3 text-center truncate" onClick={showUrlOnClick(url)}>
+                    {url}
+                  </td>
+                </tr>
+              ))}
+            </> */}
           </Suspense>
         </tbody>
       </table>

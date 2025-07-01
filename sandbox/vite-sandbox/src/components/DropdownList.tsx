@@ -80,10 +80,8 @@ export const Dropdowns = () => {
             Unmount Dropdown List
           </button>
         </div>
-        <>
-          {dropdownStore.showDropdown && <DropdownList dropdowns={dropdownStore} />}
-          <div>Hi</div>
-        </>
+        {dropdownStore.showDropdown && <DropdownList dropdowns={dropdownStore} />}
+        <div>Hi</div>
       </div>
     </>
   );
