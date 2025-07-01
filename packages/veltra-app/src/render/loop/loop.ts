@@ -56,7 +56,9 @@ export function loop<T>(items: T[]) {
               reconcile(parentNode, [...list]);
             } catch (error) {
               if (error instanceof Promise) {
-                handler(error);
+                if (handler) {
+                  handler(error);
+                }
               } else {
                 throw error;
               }

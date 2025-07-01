@@ -23,33 +23,42 @@ export function renderChildren(parentNode: Node, children: JSX.Element[], baseAn
     let oldNodes: (ChildNode | undefined)[] = [];
     const handler = getCurrentSuspenseHandler();
 
-    const disposer = effect(() => {
-      let result: JSX.Element;
-      let newNodes: (ChildNode | undefined)[] = [];
+    const run = () => {
+      const disposer = effect(() => {
+        let result: JSX.Element;
+        let newNodes: (ChildNode | undefined)[] = [];
 
-      try {
-        result = typeof child === "function" ? child() : child;
-        newNodes = toArray(getNode(result)) as ChildNode[];
-      } catch (error) {
-        if (error instanceof Promise) {
-          if (handler) {
-            handler(error);
+        try {
+          result = typeof child === "function" ? child() : child;
+          newNodes = toArray(getNode(result)) as ChildNode[];
+        } catch (error) {
+          if (error instanceof Promise) {
+            if (handler) {
+              handler(error);
+            } else {
+              error.then(() => {
+                disposer();
+                run();
+              });
+            }
+          } else {
+            throw error;
           }
-        } else {
-          throw error;
         }
-      }
 
-      oldNodes = patch(parentNode, oldNodes, newNodes, anchor);
+        oldNodes = patch(parentNode, oldNodes, newNodes, anchor);
 
-      cleanups.oldNodes.push(() => {
-        patch(parentNode, oldNodes, [], baseAnchor);
+        cleanups.oldNodes.push(() => {
+          patch(parentNode, oldNodes, [], baseAnchor);
+        });
       });
-    });
 
-    cleanups.disposer.push(() => {
-      disposer();
-    });
+      cleanups.disposer.push(() => {
+        disposer();
+      });
+    };
+
+    run();
   }
 
   return () => {

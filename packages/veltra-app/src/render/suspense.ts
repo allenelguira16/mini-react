@@ -24,7 +24,7 @@ export function Suspense(props: { fallback?: JSX.Element; children: JSX.Element 
   };
 
   onMount(() => {
-    const parentNode = rootNode.parentNode!;
+    const parentNode = rootNode.parentNode;
 
     if (!parentNode) return;
 

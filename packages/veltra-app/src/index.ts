@@ -10,5 +10,5 @@ export {
   store,
   untrack,
 } from "./reactivity";
-export { createRoot, Fragment, loop, Suspense } from "./render";
+export { createRoot, Fragment, lazy, loop, Suspense } from "./render";
 export { logJsx, memo, unwrap } from "./util";

@@ -1,4 +1,4 @@
-import { onDestroy, onMount, state, store } from "@veltra/app";
+import { lazy, loop, onDestroy, onMount, state, store } from "@veltra/app";
 
 import { name } from "../globalState";
 
@@ -102,15 +102,22 @@ const DropdownList = ({ dropdowns }: TDropdownListProps) => {
     console.log("DropdownList onDestroy");
   });
 
+  const Forms = lazy(() => import("../components/Forms"), "Forms");
+
   return (
-    <div class="flex gap-2 flex-col lg:flex-row">
-      {/* {loop(dropdowns.numbers).each((number) => (
-        <Dropdown number={number} />
-      ))} */}
-      {dropdowns.numbers.map((number) => (
-        <Dropdown number={number} />
-      ))}
-    </div>
+    <>
+      <div class="flex gap-2 flex-col lg:flex-row">
+        {loop(dropdowns.numbers).each((number) => (
+          <Dropdown number={number} />
+        ))}
+        {/* {dropdowns.numbers.map((number) => (
+        <Dropdown number={number} key={number} />
+        ))} */}
+      </div>
+      <div>
+        <Forms />
+      </div>
+    </>
   );
 };
 

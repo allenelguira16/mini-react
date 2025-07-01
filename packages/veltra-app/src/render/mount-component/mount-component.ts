@@ -30,6 +30,7 @@ export function mountComponent(
   const node = toArray(untrack(() => type({ ...props, children })));
 
   componentLifecycleContexts.set(targetNode, context);
+  // runLifecycle(context, targetNode);
 
   node.unshift(targetNode);
   return node;

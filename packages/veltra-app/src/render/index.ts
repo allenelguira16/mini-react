@@ -1,6 +1,7 @@
 export * from "./create-root";
 export * from "./fragment";
 export * from "./h";
+export * from "./lazy";
 export * from "./loop";
 export * from "./mount-component";
 export * from "./render-children";

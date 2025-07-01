@@ -17,18 +17,12 @@
   ],
   "exports": {
     ".": {
-      "import": {
-        "development": "./src/index.ts",
-        "default": "./dist/esm/index.js"
-      },
+      "import": "./dist/esm/index.js",
       "require": "./dist/cjs/index.js",
       "types": "./dist/types/index.d.ts"
     },
     "./jsx-runtime": {
-      "import": {
-        "development": "./src/jsx-runtime.ts",
-        "default": "./dist/esm/jsx-runtime.js"
-      },
+      "import": "./dist/esm/jsx-runtime.js",
       "require": "./dist/cjs/jsx-runtime.js",
       "types": "./dist/types/jsx-runtime.d.ts"
     },
