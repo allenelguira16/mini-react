@@ -1,4 +1,4 @@
-import { loop, resource, store } from "@veltra/app";
+import { resource, store, Suspense } from "@veltra/app";
 import { sleep } from "src/sleep";
 
 import { name } from "../globalState";
@@ -68,7 +68,7 @@ export const PokeDexSuspense = () => {
           </tr>
         </thead>
         <tbody>
-          {/* <Suspense
+          <Suspense
             fallback={
               <>
                 {Array.from({ length: 20 })
@@ -82,30 +82,30 @@ export const PokeDexSuspense = () => {
                   ))}
               </>
             }
-          > */}
-          <>
-            {loop(pokeDexResource.data?.results).each(({ name, url }, index) => (
-              <tr>
-                <td class="w-1/3 text-center">{index.value + 1}</td>
-                <td class="w-1/3 text-center truncate">{name}</td>
-                <td class="w-1/3 text-center truncate" onClick={showUrlOnClick(url)}>
-                  {url}
-                </td>
-              </tr>
-            ))}
-          </>
-          {/* <>
-            {pokeDexResource.data.results.map(({ name, url }, index) => (
-              <tr>
-                <td class="w-1/3 text-center">{index + 1}</td>
-                <td class="w-1/3 text-center truncate">{name}</td>
-                <td class="w-1/3 text-center truncate" onClick={showUrlOnClick(url)}>
-                  {url}
-                </td>
-              </tr>
-            ))}
-          </> */}
-          {/* </Suspense> */}
+          >
+            {/* <>
+              {loop(pokeDexResource.data?.results).each(({ name, url }, index) => (
+                <tr>
+                  <td class="w-1/3 text-center">{index.value + 1}</td>
+                  <td class="w-1/3 text-center truncate">{name}</td>
+                  <td class="w-1/3 text-center truncate" onClick={showUrlOnClick(url)}>
+                    {url}
+                  </td>
+                </tr>
+              ))}
+            </> */}
+            <>
+              {pokeDexResource.data.results.map(({ name, url }, index) => (
+                <tr>
+                  <td class="w-1/3 text-center">{index + 1}</td>
+                  <td class="w-1/3 text-center truncate">{name}</td>
+                  <td class="w-1/3 text-center truncate" onClick={showUrlOnClick(url)}>
+                    {url}
+                  </td>
+                </tr>
+              ))}
+            </>
+          </Suspense>
         </tbody>
       </table>
       <div class="flex gap-4 justify-center">

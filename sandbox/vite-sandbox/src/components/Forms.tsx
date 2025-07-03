@@ -60,9 +60,8 @@ function Input() {
       <input
         id="name-input"
         type="text"
-        onInput={(event: KeyboardEvent) => {
-          const input = event.currentTarget as HTMLInputElement;
-          name.firstName = input.value;
+        onInput={(event) => {
+          name.firstName = event.currentTarget.value;
         }}
         value={name.firstName}
       />

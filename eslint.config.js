@@ -51,6 +51,8 @@ export default [
       // ⛔ Disable unused-imports version of this rule
       "unused-imports/no-unused-vars": "off",
 
+      "@typescript-eslint/no-namespace": "off",
+
       // // Console statements
       // "no-console": ["warn", { allow: ["warn", "error"] }],
 

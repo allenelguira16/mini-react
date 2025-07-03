@@ -97,7 +97,7 @@ function App() {
   );
 }
 
-createRoot(document.getElementById("app")!, <App />);
+createApp(App).mount("#app");
 ```
 
 ## Core concepts
@@ -136,7 +136,7 @@ function App() {
   );
 }
 
-createRoot(document.getElementById("app")!, <App />);
+createApp(App).mount("#app");
 ```
 
 #### onDestroy
@@ -156,10 +156,14 @@ function App() {
   return <div>Hello, World~</div>;
 }
 
-createRoot(document.getElementById("app")!, <App />);
+createApp(App).mount("#app");
 ```
 
 ### State Management
+
+There's two ways of creating state, using state and store
+
+#### State
 
 ```tsx
 import { createRoot } from "@veltra/app";
@@ -182,13 +186,39 @@ function Counter() {
   );
 }
 
-createRoot(document.getElementById("app")!, <App />);
+createApp(Counter).mount("#app");
 ```
 
-You may wonder why is state seems weird and different from react useState.
+#### Store
+
+```tsx
+import { store, createRoot } from "@veltra/app";
+
+function Counter() {
+  const state = store({ count });
+
+  const handleCount = () => {
+    state.count++;
+  };
+
+  return (
+    <div>
+      <div>Count: {state.count}</div>
+      <button disabled={state.count > 5} onClick={handleCount}>
+        Add counter
+      </button>
+      <div>{state.count <= 3 ? <div>Hi</div> : "string"}</div>
+    </div>
+  );
+}
+
+createApp(Counter).mount("#app");
+```
+
+You may wonder why is state/store seems weird and different from react useState.
 It is because it is inspired with vue state where it can do reactivity.
 
-Under the hood, it uses proxy object to do magic and do updates to the dom without re-rendering.
+Under the hood, it uses proxy object to do magic and do updates to the dom without re-rendering the whole function.
 It is fast and more efficient than React!
 
 #### In fact, you can use the state outside to create state globally!
@@ -196,9 +226,9 @@ It is fast and more efficient than React!
 Btw state is using the signal strategy
 
 ```tsx
-import { createRoot } from "@veltra/app";
+import { state, createRoot } from "@veltra/app";
 
-const name = state("");
+const name = state(""); // or use store
 
 function App() {
   const handleInput = (event: KeyboardEvent) => {
@@ -233,12 +263,14 @@ function World() {
   return <div>Hi {name.value}, a msg from World</div>;
 }
 
-createRoot(document.getElementById("app")!, <App />);
+createApp(App).mount("#app");
 ```
 
 ### Computed
 
 Computed are derived data from state with additional steps
+
+#### Creating computed derived, you need to use computed
 
 ```tsx
 import { state, computed, createRoot } from "@veltra/app";
@@ -262,7 +294,38 @@ function Counter() {
   );
 }
 
-createRoot(document.getElementById("app")!, <App />);
+createApp(App).mount("#app");
+```
+
+#### In store you don't actually need to use computed
+
+```tsx
+import { store, createRoot } from "@veltra/app";
+
+function Counter() {
+  const state = store({
+    count: 0,
+    get double() {
+      return this.count * 2, // or if you want to separate it you can just pass the state here
+    },
+  });
+
+  const handleCount = () => {
+    state.count++;
+  };
+
+  return (
+    <div>
+      <div>Count: {state.count}</div>
+      <div>Double Count: {state.double}</div>
+      <button disabled={state.count > 5} onClick={handleCount}>
+        Add counter
+      </button>
+    </div>
+  );
+}
+
+createApp(App).mount("#app");
 ```
 
 ### Subscribing to an effect
@@ -295,7 +358,7 @@ function Counter() {
   );
 }
 
-createRoot(document.getElementById("app")!, <App />);
+createApp(App).mount("#app");
 ```
 
 ### Looping through elements
@@ -303,7 +366,7 @@ createRoot(document.getElementById("app")!, <App />);
 When looping through elements, you can use the `loop` helper.
 While you can still loop using .map in array, it is not efficient.
 
-Use .map only if purely representational, if it needs cache like it looping through components and it has state, use `loop` helper
+Use .map only if purely representational, if it needs cache like looping through components and it has state, use `loop` helper
 
 With `loop` helper, it is efficient and cache's DOM elements properly.
 
@@ -351,7 +414,7 @@ export const DropdownList = () => {
         <button onClick={handleSort("desc")}>Descending</button>
       </div>
       <div style={{ display: "flex" }}>
-        {/* Component is cached properly and state is preserved, unlike traditional .map */}
+        {/* Component is cached properly and state is preserved, unlike traditional .map where it rerenders the whole function inside arrays */}
         {loop(numbers.value).each((number) => (
           <Dropdown number={number} />
         ))}
@@ -385,7 +448,7 @@ const Dropdown = ({ number }: { number: number }) => {
   );
 };
 
-createRoot(document.getElementById("app")!, <App />);
+createApp(App).mount("#app");
 ```
 
 ### Resource
@@ -395,7 +458,7 @@ A way to fetch data dynamically
 ```tsx
 import { resource, createRoot } from "@veltra/app";
 
-function Counter() {
+function App() {
   const msg = resource(async () => {
     await new Promise((resolve) => {
       setTimeout(resolve, 1000); // delay for 1 second
@@ -410,7 +473,7 @@ function Counter() {
   );
 }
 
-createRoot(document.getElementById("app")!, <App />);
+createApp(App).mount("#app");
 ```
 
 ### Suspense
@@ -438,9 +501,9 @@ function Counter() {
   );
 }
 
-createRoot(document.getElementById("app")!, <App />);
+createApp(App).mount("#app");
 ```
 
 ## Future features to be added
 
-- Proper DOM Types
+- Integrate loop as runtime instead of manual

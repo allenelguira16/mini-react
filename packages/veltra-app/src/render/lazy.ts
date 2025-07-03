@@ -1,5 +1,7 @@
 import { memo } from "~/util";
 
+import { getCurrentSuspenseHandler } from "./suspense";
+
 export function lazy<M extends Record<string, any>, K extends keyof M = "default">(
   loader: () => Promise<M>,
   namedExport?: K,
@@ -29,5 +31,9 @@ export function lazy<M extends Record<string, any>, K extends keyof M = "default
     throw promise;
   });
 
-  return () => getComponent;
+  return () => {
+    const handler = getCurrentSuspenseHandler();
+
+    return handler ? getComponent() : getComponent;
+  };
 }

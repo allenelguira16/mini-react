@@ -1,48 +1,31 @@
 import "./main.css";
 
-import { createRoot } from "@veltra/app";
+import { createApp, effect, resource, stopEffect } from "@veltra/app";
 
 import { App } from "./App";
-createRoot(document.getElementById("app")!, () => <App />);
-// import { effect, resource, state } from "@veltra/app";
+
+const app = createApp(App);
+
+app.mount("#app");
 
 // const count = state(0);
 
-// const msg = resource(async () => {
-//   const value = count.value;
-//   return new Promise((resolve) => {
-//     setTimeout(() => {
-//       resolve(`render ${value}`);
-//     }, 1000);
-//   });
-// });
+const msg = resource(async () => {
+  await new Promise((resolve) => {
+    setTimeout(resolve, 1000); // delay for 1 second
+  });
+  return "hello world";
+});
 
-// setInterval(() => {
-//   count.value++;
-// }, 1000);
-
-// let disposer: (() => void) | undefined;
-
-// const run = () => {
-//   // disposer?.();
-
-//   // disposer =
-//   const disposer = effect(() => {
-//     try {
-//       console.log(msg.data);
-//     } catch (error) {
-//       // stopEffect();
-//       if (error instanceof Promise) {
-//         queueMicrotask(() => {
-//           disposer();
-//         });
-//         error.then(() => {
-//           run();
-//         });
-//       }
-//     }
-//   });
-//   // stopEffect();
-// };
-
-// run();
+effect(() => {
+  try {
+    console.log(msg.data);
+  } catch (error) {
+    stopEffect();
+    if (error instanceof Promise) {
+      error.then(() => {
+        console.log(msg.data);
+      });
+    }
+  }
+});

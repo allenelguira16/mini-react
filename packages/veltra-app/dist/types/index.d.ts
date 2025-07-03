@@ -76,12 +76,15 @@ declare function onMount(fn: () => () => void): void;
 declare function onMount(fn: () => void): void;
 
 /**
- * create a root element
+ * create root app
  *
  * @param rootElement - The root element.
  * @param App - The app to render.
  */
-declare function createRoot(rootElement: HTMLElement, App: () => JSX.Element): void;
+declare function createApp(App: () => JSX.Element): {
+    mount: (id: string) => void;
+    unmount: () => void;
+};
 
 declare function lazy<M extends Record<string, any>, K extends keyof M = "default">(loader: () => Promise<M>, namedExport?: K): () => any;
 
@@ -130,5 +133,5 @@ declare function memo<T>(fn: () => T): () => T;
  */
 declare function unwrap<T>(value: any): Partial<T>;
 
-export { Suspense, computed, createRoot, effect, lazy, logJsx, loop, memo, onDestroy, onMount, resource, state, stopEffect, store, untrack, unwrap };
+export { Suspense, computed, createApp, effect, lazy, logJsx, loop, memo, onDestroy, onMount, resource, state, stopEffect, store, untrack, unwrap };
 export type { Computed, DestroyFn, MountFn, State };

@@ -25,12 +25,12 @@ export function renderChildren(parentNode: Node, children: JSX.Element[], baseAn
 
     const run = () => {
       const disposer = effect(() => {
-        let result: JSX.Element;
+        // let result: JSX.Element;
         let newNodes: (ChildNode | undefined)[] = [];
 
         try {
-          result = typeof child === "function" ? child() : child;
-          newNodes = toArray(getNode(result)) as ChildNode[];
+          // result = typeof child === "function" ? child() : child;
+          newNodes = toArray(getNode(child)) as ChildNode[];
         } catch (error) {
           if (error instanceof Promise) {
             if (handler) {

@@ -57,5 +57,7 @@ export function Suspense(props: { fallback?: JSX.Element; children: JSX.Element 
 }
 
 export function getCurrentSuspenseHandler() {
-  return suspenseHandlerList[suspenseHandlerList.length - 1];
+  return suspenseHandlerList[suspenseHandlerList.length - 1] as
+    | ((promise: Promise<void>) => void)
+    | undefined;
 }

@@ -39,22 +39,20 @@ export function effect(fn: () => void): () => void {
     }
   };
 
+  const disposer = () => removeEffect(wrappedEffect);
+  lastDisposer = disposer;
+
   wrappedEffect.deps = [];
   wrappedEffect();
-
-  const disposer = () => removeEffect(wrappedEffect);
-  lastDisposer = disposer; // ✅ track disposer for stopEffect
 
   return disposer;
 }
 
 export function stopEffect() {
-  queueMicrotask(() => {
-    if (lastDisposer) {
-      lastDisposer();
-      lastDisposer = null;
-    }
-  });
+  if (lastDisposer) {
+    lastDisposer();
+    lastDisposer = null;
+  }
 }
 
 /**
